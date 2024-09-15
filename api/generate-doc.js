@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 const openai_api_key = process.env.OPENAI_API_KEY;
 
-export default async function (req, res) {
+module.exports = async function (req, res) {
     if (req.method !== 'POST') {
         res.status(405).send({ message: 'Only POST requests allowed' });
         return;
@@ -68,4 +68,4 @@ Provide the documentation below:
         console.error('Error:', error);
         res.status(500).json({ error: 'Error generating documentation', details: error.message });
     }
-}
+};
