@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DevDok - Generate Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h2>Documentation Generator</h2>
+    <form id="doc-form">
+        <label for="code">Code Snippet:</label><br>
+        <textarea id="code" name="code" rows="10" cols="70" required></textarea><br><br>
+        <label for="jira">Jira Ticket Details:</label><br>
+        <textarea id="jira" name="jira" rows="5" cols="70"></textarea><br><br>
+        <button type="submit">Generate Documentation</button>
+    </form>
+    <div id="output"></div>
+    <script src="generator-doc.js"></script>
+</body>
+</html>
