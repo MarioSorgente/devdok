@@ -1,3 +1,5 @@
+import fetch from 'node-fetch';
+
 const openai_api_key = process.env.OPENAI_API_KEY;
 
 export default async function (req, res) {
@@ -48,7 +50,7 @@ Provide the documentation below:
 `;
 
     try {
-        const completion = await fetch('https://api.openai.com/v1/completions', {
+        const completion = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -56,7 +58,10 @@ Provide the documentation below:
             },
             body: JSON.stringify({
                 model: 'gpt-3.5-turbo',
-                prompt: prompt,
+                messages: [
+                    { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
+                    { role: 'user', content: prompt }
+                ],
                 max_tokens: 1000,
                 temperature: 0.7,
             })
@@ -64,14 +69,15 @@ Provide the documentation below:
 
         const data = await completion.json();
 
-        if (data.choices && data.choices.length > 0) {
-            const documentation = data.choices[0].text.trim();
+        if (completion.ok) {
+            const documentation = data.choices[0].message.content.trim();
             res.status(200).json({ documentation });
         } else {
-            res.status(500).json({ error: 'No response from OpenAI API' });
+            console.error('OpenAI API error:', data);
+            res.status(500).json({ error: 'Error from OpenAI API', details: data });
         }
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Error generating documentation' });
+        res.status(500).json({ error: 'Error generating documentation', details: error.message });
     }
 }
