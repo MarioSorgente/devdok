@@ -1,0 +1,42 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.left, .right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.left {
+    flex-direction: column;
+    padding: 20px;
+}
+
+.left h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.left p {
+    font-size: 18px;
+    margin-bottom: 40px;
+}
+
+.left button {
+    padding: 15px 30px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.right img {
+    max-width: 100%;
+    height: auto;
+}
