@@ -27,18 +27,6 @@ Instructions:
   * Usage Instructions:
     * Provide examples of how to use the code.
     * Include any prerequisites or dependencies.
-  * Notes and Recommendations:
-    * Mention limitations, assumptions, or important considerations.
-    * Suggest potential improvements or alternatives if applicable.
-* Formatting Guidelines:
-  * Use Markdown syntax compatible with Notion and Confluence:
-    * Headings: Use # for headings (e.g., #, ##, ###).
-    * Code Blocks: Enclose code snippets within triple backticks (\`\`\`) specifying the language (e.g., python).
-    * Lists: Use hyphens - for bullet points and numbers followed by periods 1. for numbered lists.
-    * Bold and Italics: Use double asterisks ** for bold and single asterisks * for italics.
-    * Inline Code: Use single backticks for inline code.
-  * Avoid advanced Markdown features that may not render properly in Notion or Confluence.
-* Ensure that the output is clean and free of unnecessary whitespace or special characters.
 
 Code Snippet:
 ${code}
