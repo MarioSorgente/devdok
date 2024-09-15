@@ -3,22 +3,14 @@ const fetch = require('node-fetch');
 const openai_api_key = process.env.OPENAI_API_KEY;
 
 module.exports = async function (req, res) {
-    console.log('Function invoked');
+  if (req.method !== 'POST') {
+    res.status(405).send({ message: 'Only POST requests allowed' });
+    return;
+  }
 
-    if (req.method !== 'POST') {
-        console.log('Invalid request method:', req.method);
-        res.status(405).send({ message: 'Only POST requests allowed' });
-        return;
-    }
+  const { code, jira } = req.body;
 
-    const { code, jira } = req.body;
-    console.log('Received code and jira:', {
-        codeSnippet: code ? code.substring(0, 50) : 'No code provided',
-        jiraDetails: jira ? jira.substring(0, 50) : 'No Jira details provided',
-    });
-
-
-    const prompt = `
+  const prompt = `
 You are an AI assistant that helps developers create clear and concise documentation for their code. Based on the provided code snippet and associated Jira ticket information, generate comprehensive documentation in Markdown format, optimized for seamless pasting into tools like Notion or Confluence.
 
 Instructions:
@@ -45,38 +37,35 @@ ${jira}
 Provide the documentation below:
 `;
 
-    try {
-        const completion = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${openai_api_key}`
-            },
-            body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
-                messages: [
-                    { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
-                    { role: 'user', content: prompt }
-                ],
-                max_tokens: 1000,
-                temperature: 0.7,
-            })
-        });
+  try {
+    const completion = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${openai_api_key}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 1000,
+        temperature: 0.7,
+      })
+    });
 
-       const data = await completion.json();
-        console.log('OpenAI API response status:', completion.status);
-        console.log('OpenAI API response data:', data);
+    const data = await completion.json();
 
-        if (completion.ok) {
-            const documentation = data.choices[0].message.content.trim();
-            console.log('Generated documentation:', documentation.substring(0, 100));
-            res.status(200).json({ documentation });
-        } else {
-            console.error('OpenAI API error:', data);
-            res.status(500).json({ error: 'Error from OpenAI API', details: data });
-        }
-    } catch (error) {
-        console.error('Error in try-catch:', error);
-        res.status(500).json({ error: 'Error generating documentation', details: error.message });
+    if (completion.ok) {
+      const documentation = data.choices[0].message.content.trim();
+      res.status(200).json({ documentation });
+    } else {
+      console.error('OpenAI API error:', data);
+      res.status(500).json({ error: 'Error from OpenAI API', details: data });
     }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Error generating documentation', details: error.message });
+  }
 };
