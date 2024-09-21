@@ -3,18 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <title>DevDok - Generate Documentation</title>
-    <link rel="stylesheet" href="styles.css">
+    <!-- Bootstrap CSS -->
+    <link
+        rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #fff;
+            border-bottom: 1px solid #e4e5e7;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #4c5a67 !important;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+        h2 {
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #4c5a67;
+        }
+        label {
+            font-weight: 500;
+            margin-top: 20px;
+        }
+        textarea {
+            resize: vertical;
+        }
+        .btn-primary {
+            background-color: #4c5a67;
+            border-color: #4c5a67;
+            margin-top: 30px;
+            padding: 10px 30px;
+            font-size: 1rem;
+        }
+        .btn-primary:hover {
+            background-color: #3b4b57;
+            border-color: #3b4b57;
+        }
+        #output {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #e4e5e7;
+            border-radius: 5px;
+        }
+        footer {
+            background-color: #fff;
+            border-top: 1px solid #e4e5e7;
+            padding: 20px;
+            text-align: center;
+            color: #888;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        .form-control:focus {
+            border-color: #4c5a67;
+            box-shadow: none;
+        }
+    </style>
 </head>
 <body>
-    <h2>Documentation Generator</h2>
-    <form id="doc-form">
-        <label for="code">Code Snippet:</label><br>
-        <textarea id="code" name="code" rows="10" cols="70" required></textarea><br><br>
-        <label for="jira">Jira Ticket Details:</label><br>
-        <textarea id="jira" name="jira" rows="5" cols="70"></textarea><br><br>
-        <button type="submit">Generate Documentation</button>
-    </form>
-    <div id="output"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">DevDok</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Documentation Generator</h2>
+        <form id="doc-form">
+            <div class="form-group">
+                <label for="code">Code Snippet:</label>
+                <textarea class="form-control" id="code" name="code" rows="8" placeholder="Paste your code here..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="jira">Jira Ticket Details:</label>
+                <textarea class="form-control" id="jira" name="jira" rows="4" placeholder="Enter Jira ticket details..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Generate Documentation</button>
+        </form>
+        <div id="output"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2023 DevDok. All rights reserved.
+    </footer>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JS -->
     <script src="generator-doc.js"></script>
 </body>
 </html>
