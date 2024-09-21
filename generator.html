@@ -11,19 +11,20 @@
     <!-- Custom CSS -->
     <style>
         body {
-            background-color: #f8f9fb;
+            background-color: #f0f4f8;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
             margin: 0;
             padding: 0;
         }
         .navbar {
-            background-color: #fff;
+            background-color: #ffffff;
             border-bottom: 1px solid #e4e5e7;
+            padding: 15px;
         }
         .navbar-brand {
             font-weight: bold;
-            color: #4c5a67 !important;
+            color: #007c89 !important;
         }
         .container {
             max-width: 800px;
@@ -33,7 +34,7 @@
         h2 {
             font-weight: 600;
             margin-bottom: 30px;
-            color: #4c5a67;
+            color: #007c89;
         }
         label {
             font-weight: 500;
@@ -41,27 +42,29 @@
         }
         textarea {
             resize: vertical;
+            border-radius: 8px; /* Rounded borders */
         }
         .btn-primary {
-            background-color: #4c5a67;
-            border-color: #4c5a67;
+            background-color: #007c89;
+            border-color: #007c89;
             margin-top: 30px;
             padding: 10px 30px;
             font-size: 1rem;
+            border-radius: 30px; /* Rounded button */
         }
         .btn-primary:hover {
-            background-color: #3b4b57;
-            border-color: #3b4b57;
+            background-color: #005f6b;
+            border-color: #005f6b;
         }
         #output {
             margin-top: 50px;
             padding: 20px;
-            background-color: #fff;
+            background-color: #ffffff;
             border: 1px solid #e4e5e7;
-            border-radius: 5px;
+            border-radius: 8px; /* Rounded borders */
         }
         footer {
-            background-color: #fff;
+            background-color: #ffffff;
             border-top: 1px solid #e4e5e7;
             padding: 20px;
             text-align: center;
@@ -71,8 +74,29 @@
             bottom: 0;
         }
         .form-control:focus {
-            border-color: #4c5a67;
+            border-color: #007c89;
             box-shadow: none;
+        }
+        /* Hero Section without background image */
+        .hero {
+            background-color: #007c89;
+            color: #ffffff;
+            padding: 60px 0;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+        .navbar-logo {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -81,20 +105,35 @@
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#">DevDok</a>
+            <!-- Add your logo here -->
+            <a class="navbar-brand" href="#">
+                <img src="duck.png" alt="DevDok Logo" class="navbar-logo">
+                DevDok
+            </a>
         </div>
     </nav>
 
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="container">
+            <h1>Generate Documentation Effortlessly</h1>
+            <p>Turn your code snippets into documentation.</p>
+            <!-- Optionally, add a button or call to action here -->
+        </div>
+    </div>
+
     <!-- Main Content -->
     <div class="container">
-        <h2>Documentation Generator</h2>
         <form id="doc-form">
             <div class="form-group">
                 <label for="code">Code Snippet:</label>
                 <textarea class="form-control" id="code" name="code" rows="8" placeholder="Paste your code here..." required></textarea>
             </div>
             <div class="form-group">
-                <label for="jira">Jira Ticket Details:</label>
+                <label for="jira">Jira Ticket Details 
+                    <!-- Add Jira logo here -->
+                    <img src="jira.png" alt="Jira Logo" style="width:20px; height:20px; vertical-align:middle;">
+                </label>
                 <textarea class="form-control" id="jira" name="jira" rows="4" placeholder="Enter Jira ticket details..."></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Generate Documentation</button>
@@ -104,7 +143,7 @@
 
     <!-- Footer -->
     <footer>
-        &copy; 2023 DevDok. All rights reserved.
+        &copy; 2024 DevDok. All rights reserved.
     </footer>
 
     <!-- Bootstrap JS and dependencies -->
