@@ -6,7 +6,6 @@ body, html {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: #f8f9fa; /* Light background for better contrast */
 }
 
 /* Navbar Logo Size */
@@ -31,20 +30,6 @@ body, html {
     border-color: #5a6268;
 }
 
-.btn-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
-    padding: 5px 15px;
-    font-size: 0.9rem;
-    border-radius: 20px; /* Rounded button */
-    transition: background-color 0.3s, border-color 0.3s;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-    border-color: #5a6268;
-}
-
 /* Footer Styles */
 footer {
     background-color: #ffffff;
@@ -62,27 +47,25 @@ footer {
 .hero {
     background-color: #343a40;
     color: #ffffff;
-    padding: 60px 0; /* Increased padding for a more spacious feel */
+    padding: 40px 0; /* Increased padding for a more spacious feel */
     text-align: center;
 }
 
 .hero h1 {
     font-size: 3rem; /* Increased font size for better visibility */
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .hero p {
     font-size: 1.5rem; /* Increased font size */
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
 /* Responsive Image */
 .img-fluid {
     max-width: 100%;
     height: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Container Styles for index.html and generator.html */
@@ -94,9 +77,6 @@ footer {
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    background-color: #ffffff; /* White background for main content */
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Left Section Styles */
@@ -131,27 +111,10 @@ footer {
 }
 
 /* Modal Pane Styles */
-.modal-body {
-    padding: 30px;
-}
-
-.modal-body pre {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    padding: 15px;
-    border-radius: 5px;
-    height: 400px; /* Increased height for better visibility */
+.modal-pane {
+    width: 100%;
     overflow-y: auto;
-    white-space: pre-wrap;
-}
-
-.modal-body #renderedContent {
-    padding: 15px;
-    background-color: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
-    height: 400px; /* Increased height for better visibility */
-    overflow-y: auto;
+    padding: 20px;
 }
 
 /* Copy Button Styles within Modal */
@@ -159,10 +122,28 @@ footer {
     margin-left: 10px;
 }
 
+/* Adjust pre and div within modal panes */
+.modal-body pre {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 5px;
+    height: 300px;
+    overflow-y: auto;
+}
+
+.modal-body #renderedContent {
+    padding: 15px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    height: 300px;
+    overflow-y: auto;
+}
+
 /* Status Messages */
 #markdownStatus, #renderedStatus {
     font-size: 0.9rem;
-    margin-left: 10px;
 }
 
 /* Responsive Design */
@@ -178,18 +159,21 @@ footer {
     .right img {
         max-width: 100%;
     }
+    /* Modal panes stack vertically on small screens */
+    .modal-body .row {
+        flex-direction: column;
+    }
+    .modal-pane {
+        width: 100%;
+    }
     /* Adjust hero section padding */
     .hero {
-        padding: 40px 0;
+        padding: 30px 0;
     }
     .hero h1 {
         font-size: 2.5rem;
     }
     .hero p {
         font-size: 1.2rem;
-    }
-    /* Adjust modal heights on small screens */
-    .modal-body pre, .modal-body #renderedContent {
-        height: 300px;
     }
 }
