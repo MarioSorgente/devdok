@@ -5,15 +5,19 @@
     <title>DevDok - Generate Documentation Automatically</title>
     <!-- Favicon -->
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
     <!-- Meta Description -->
     <meta name="description" content="Generate comprehensive documentation for your code automatically with DevDok. Transform your code and Jira tickets into clear, structured documentation." />
+    
     <!-- Bootstrap CSS -->
     <link
         rel="stylesheet"
         href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
+    
     <!-- Include marked.js library for Markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
@@ -57,21 +61,34 @@
 
     <!-- Modal -->
     <div class="modal fade" id="outputModal" tabindex="-1" role="dialog" aria-labelledby="outputModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-dialog modal-xl" role="document"> <!-- Changed to modal-xl for larger size -->
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="outputModalLabel">Generated Documentation</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="modalCloseButton">
               <span aria-hidden="true">&times;</span>
             </button>
-            <button class="btn btn-secondary copy-button" id="copyButton">Copy Markdown</button>
           </div>
           <div class="modal-body">
-            <div class="modal-pane modal-pane-left">
-              <pre id="markdownContent" style="white-space: pre-wrap;"></pre>
-            </div>
-            <div class="modal-pane modal-pane-right">
-              <div id="renderedContent"></div>
+            <div class="row">
+                <!-- Markdown Pane -->
+                <div class="col-md-6 mb-4">
+                    <h5>Markdown</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <button class="btn btn-secondary btn-sm" id="copyMarkdownButton">Copy Markdown</button>
+                        <span id="markdownStatus" class="text-success" style="display: none;">Copied!</span>
+                    </div>
+                    <pre id="markdownContent" class="border p-3 rounded" style="white-space: pre-wrap; height: 300px; overflow-y: auto;"></pre>
+                </div>
+                <!-- Rendered Content Pane -->
+                <div class="col-md-6 mb-4">
+                    <h5>Rendered Documentation</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <button class="btn btn-secondary btn-sm" id="copyRenderedButton">Copy for Notion</button>
+                        <span id="renderedStatus" class="text-success" style="display: none;">Copied!</span>
+                    </div>
+                    <div id="renderedContent" class="border p-3 rounded" style="height: 300px; overflow-y: auto;"></div>
+                </div>
             </div>
           </div>
         </div>
