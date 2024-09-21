@@ -25,6 +25,7 @@
         .navbar-brand {
             font-weight: bold;
             color: #6c757d !important;
+            font-size: 1.5rem; /* Increased font size */
         }
         .container {
             max-width: 800px;
@@ -81,17 +82,17 @@
         .hero {
             background-color: #343a40;
             color: #ffffff;
-            padding: 60px 0;
+            padding: 30px 0; /* Reduced padding */
             text-align: center;
         }
         .hero h1 {
             font-size: 2.5rem;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 10px; /* Adjusted margin */
         }
         .hero p {
             font-size: 1.2rem;
-            margin-bottom: 40px;
+            margin-bottom: 20px; /* Adjusted margin */
         }
         .navbar-logo {
             width: 30px;
@@ -116,7 +117,7 @@
     <!-- Hero Section -->
     <div class="hero">
         <div class="container">
-            <h1>Generate Documentation Effortlessly</h1>
+            <h1>Generate documentation for your code</h1>
             <p>Turn your code snippets into comprehensive documentation.</p>
             <!-- Optionally, add a button or call to action here -->
         </div>
@@ -130,10 +131,7 @@
                 <textarea class="form-control" id="code" name="code" rows="8" placeholder="Paste your code here..." required></textarea>
             </div>
             <div class="form-group">
-                <label for="jira">Jira Ticket Details 
-                    <!-- Jira logo -->
-                    <img src="jira.jpg" alt="Jira Logo" style="width:20px; height:20px; vertical-align:middle;">
-                </label>
+                <label for="jira">Jira Ticket Details</label>
                 <textarea class="form-control" id="jira" name="jira" rows="4" placeholder="Enter Jira ticket details..."></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Generate Documentation</button>
