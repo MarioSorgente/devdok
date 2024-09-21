@@ -1,81 +1,25 @@
-/* General Body Styles */
-body {
-    background-color: #f8f9fa;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+/* styles.css */
+
+/* Navbar Logo Size */
+.navbar-logo {
+    width: 30px;
+    height: 30px;
 }
 
-/* Container Styles */
-.index-container, .generator-container {
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex: 1; /* Allow the container to grow and push the footer down */
-}
-
-/* Left Section Styles */
-.left {
-    width: 45%;
-}
-
-.left h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #343a40;
-}
-
-.left p {
-    font-size: 1.2rem;
-    margin-top: 20px;
-    color: #6c757d;
-}
-
-/* Right Section Styles */
-.right {
-    width: 50%;
-}
-
-.right img {
-    max-width: 100%;
-    height: auto;
-}
-
-/* Button Styles */
+/* Button Styles - Consistent with generator.html */
 .btn-primary {
     background-color: #6c757d;
     border-color: #6c757d;
-    margin-top: 20px;
     padding: 10px 30px;
     font-size: 1rem;
     border-radius: 30px; /* Rounded button */
     text-transform: uppercase;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .btn-primary:hover {
     background-color: #5a6268;
     border-color: #5a6268;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .index-container, .generator-container {
-        flex-direction: column;
-        text-align: center;
-    }
-    .left, .right {
-        width: 100%;
-    }
-    .left {
-        margin-bottom: 30px;
-    }
 }
 
 /* Footer Styles */
@@ -90,3 +34,30 @@ footer {
     position: relative; /* Remove fixed positioning */
     bottom: 0;
 }
+
+/* Hero Section Styles */
+.hero {
+    background-color: #343a40;
+    color: #ffffff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+/* Responsive Image */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Additional Custom Styles if Needed */
