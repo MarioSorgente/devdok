@@ -21,7 +21,7 @@
 
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
+        <div class="container generator-container">
             <!-- Logo links back to home page -->
             <a class="navbar-brand" href="index.html">
                 <img src="duck.png" alt="DevDok Logo" class="navbar-logo">
@@ -32,14 +32,15 @@
 
     <!-- Hero Section -->
     <div class="hero">
-        <div class="container">
+        <div class="container generator-container">
             <h1>Generate documentation for your code</h1>
             <p>Turn your code snippets into comprehensive documentation.</p>
+            <!-- Optionally, add a button or call to action here -->
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="container">
+    <div class="container generator-container">
         <form id="doc-form">
             <div class="form-group">
                 <label for="code">Code Snippet:</label>
@@ -67,11 +68,13 @@
             <button class="btn btn-secondary copy-button" id="copyButton">Copy Markdown</button>
           </div>
           <div class="modal-body">
-            <div class="modal-pane modal-pane-left">
-              <pre id="markdownContent" style="white-space: pre-wrap;"></pre>
-            </div>
-            <div class="modal-pane modal-pane-right">
-              <div id="renderedContent"></div>
+            <div class="row w-100">
+                <div class="col-md-6">
+                    <pre id="markdownContent" style="white-space: pre-wrap;"></pre>
+                </div>
+                <div class="col-md-6">
+                    <div id="renderedContent"></div>
+                </div>
             </div>
           </div>
         </div>
