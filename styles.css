@@ -1,5 +1,12 @@
 /* styles.css */
 
+/* Reset some default styles */
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 /* Navbar Logo Size */
 .navbar-logo {
     width: 30px;
@@ -39,7 +46,7 @@ footer {
 .hero {
     background-color: #343a40;
     color: #ffffff;
-    padding: 8px 0;
+    padding: 20px 0;
     text-align: center;
 }
 
@@ -60,4 +67,99 @@ footer {
     height: auto;
 }
 
-/* Additional Custom Styles if Needed */
+/* Container Styles for index.html and generator.html */
+.index-container, .generator-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1; /* Allow the container to grow and push the footer down */
+}
+
+/* Left Section Styles */
+.left {
+    width: 45%;
+}
+
+.left h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #343a40;
+}
+
+.left p {
+    font-size: 1.2rem;
+    margin-top: 20px;
+    color: #6c757d;
+}
+
+/* Right Section Styles */
+.right {
+    width: 50%;
+}
+
+.right img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Modal Pane Styles */
+.modal-pane {
+    /* Initially set to 50%, overridden by Bootstrap grid */
+    width: 50%;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* Copy Button Styles within Modal */
+.copy-button {
+    /* Adjusted positioning within modal header */
+    margin-left: 10px;
+}
+
+/* Adjust pre and div within modal panes */
+.modal-body pre {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 5px;
+    height: 100%;
+    overflow: auto;
+}
+
+.modal-body #renderedContent {
+    padding: 15px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    height: 100%;
+    overflow: auto;
+}
+
+/* Status Messages */
+#markdownStatus, #renderedStatus {
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .index-container, .generator-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    .left, .right {
+        width: 100%;
+    }
+    .left {
+        margin-bottom: 30px;
+    }
+    /* Modal panes stack vertically on small screens */
+    .modal-body .row {
+        flex-direction: column;
+    }
+    .modal-pane {
+        width: 100%;
+    }
+}
