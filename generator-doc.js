@@ -1,3 +1,5 @@
+// generator-doc.js
+
 document.getElementById('doc-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const code = document.getElementById('code').value;
@@ -40,13 +42,40 @@ document.getElementById('doc-form').addEventListener('submit', async function(e)
 });
 
 // Copy Markdown to Clipboard
-document.getElementById('copyButton').addEventListener('click', function() {
+document.getElementById('copyMarkdownButton').addEventListener('click', function() {
     const markdownText = document.getElementById('markdownContent').innerText;
     navigator.clipboard.writeText(markdownText).then(function() {
-        alert('Markdown copied to clipboard!');
+        // Show success message
+        document.getElementById('markdownStatus').style.display = 'inline';
+        setTimeout(() => {
+            document.getElementById('markdownStatus').style.display = 'none';
+        }, 2000);
     }, function(err) {
         console.error('Could not copy text: ', err);
+        alert('Failed to copy Markdown.');
     });
+});
+
+// Copy Rendered HTML to Clipboard (Ready for Notion)
+document.getElementById('copyRenderedButton').addEventListener('click', function() {
+    const renderedContent = document.getElementById('renderedContent').innerHTML;
+    // Create a temporary textarea to copy HTML
+    const tempTextarea = document.createElement('textarea');
+    tempTextarea.value = renderedContent;
+    document.body.appendChild(tempTextarea);
+    tempTextarea.select();
+    try {
+        document.execCommand('copy');
+        // Show success message
+        document.getElementById('renderedStatus').style.display = 'inline';
+        setTimeout(() => {
+            document.getElementById('renderedStatus').style.display = 'none';
+        }, 2000);
+    } catch (err) {
+        console.error('Could not copy text: ', err);
+        alert('Failed to copy for Notion.');
+    }
+    document.body.removeChild(tempTextarea);
 });
 
 // Optional: Close the modal and clear content
