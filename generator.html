@@ -25,7 +25,7 @@
 
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
+        <div class="container generator-container">
             <!-- Logo links back to home page -->
             <a class="navbar-brand" href="index.html">
                 <img src="duck.png" alt="DevDok Logo" class="navbar-logo">
@@ -36,14 +36,15 @@
 
     <!-- Hero Section -->
     <div class="hero">
-        <div class="container">
+        <div class="container generator-container">
             <h1>Generate documentation for your code</h1>
             <p>Turn your code snippets into comprehensive documentation.</p>
+            <!-- Optionally, add a button or call to action here -->
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="container">
+    <div class="container generator-container">
         <form id="doc-form">
             <div class="form-group">
                 <label for="code">Code Snippet:</label>
@@ -78,7 +79,7 @@
                         <button class="btn btn-secondary btn-sm" id="copyMarkdownButton">Copy Markdown</button>
                         <span id="markdownStatus" class="text-success" style="display: none;">Copied!</span>
                     </div>
-                    <pre id="markdownContent" class="border p-3 rounded" style="white-space: pre-wrap; height: 300px; overflow-y: auto;"></pre>
+                    <pre id="markdownContent" class="border p-3 rounded" style="white-space: pre-wrap;"></pre>
                 </div>
                 <!-- Rendered Content Pane -->
                 <div class="col-md-6 mb-4">
@@ -87,7 +88,7 @@
                         <button class="btn btn-secondary btn-sm" id="copyRenderedButton">Copy for Notion</button>
                         <span id="renderedStatus" class="text-success" style="display: none;">Copied!</span>
                     </div>
-                    <div id="renderedContent" class="border p-3 rounded" style="height: 300px; overflow-y: auto;"></div>
+                    <div id="renderedContent" class="border p-3 rounded"></div>
                 </div>
             </div>
           </div>
