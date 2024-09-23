@@ -27,6 +27,26 @@
 
     <!-- Include marked.js library for Markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Firebase JS SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+    <!-- Initialize Firebase -->
+    <script>
+      // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAYIv_q2cRlAro1rsnzcXutYxW_ginonIY",
+        authDomain: "devdok-5da05.firebaseapp.com",
+        projectId: "devdok-5da05",
+        storageBucket: "devdok-5da05.appspot.com",
+        messagingSenderId: "924117031294",
+        appId: "1:924117031294:web:af6ab6958815ba45517b2f"
+  };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
 </head>
 <body>
 
@@ -38,6 +58,9 @@
                 <img src="duck.png" alt="DevDok Logo" class="navbar-logo">
                 DevDok
             </a>
+            <!-- Login and Logout Buttons -->
+            <button id="login-button" class="btn btn-outline-primary ml-auto">Login with Google</button>
+            <button id="logout-button" class="btn btn-outline-secondary ml-2" style="display: none;">Logout</button>
         </div>
     </nav>
 
@@ -61,6 +84,7 @@
                 <textarea class="form-control" id="jira" name="jira" rows="4" placeholder="Enter Jira ticket details..."></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Generate</button>
+            <button type="button" class="btn btn-secondary mt-3" id="feedback-button">Send Feedback</button>
         </form>
         <!-- Hidden Output Div (no longer used) -->
         <div id="output"></div>
@@ -97,6 +121,29 @@
                     <div id="renderedContent" class="border p-3 rounded"></div>
                 </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header"> 
+            <h5 class="modal-title" id="feedbackModalLabel">Send Feedback</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="feedbackCloseButton">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="feedback-form">
+              <div class="form-group">
+                <label for="feedback-text">Your Feedback:</label>
+                <textarea class="form-control" id="feedback-text" rows="5" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            </form>
           </div>
         </div>
       </div>
