@@ -1,5 +1,7 @@
 // generator-doc.js
 
+let generationCount = 0; // Variable to track the number of generations
+
 // Firebase Authentication and Feedback
 function setupAuthAndFeedback() {
     const loginButton = document.getElementById('login-button');
@@ -86,6 +88,14 @@ function setupAuthAndFeedback() {
 // Existing code for document generation and copying
 document.getElementById('doc-form').addEventListener('submit', async function(e) {
     e.preventDefault();
+
+    const user = firebase.auth().currentUser;
+
+    if (generationCount >= 1 && !user) {
+        alert('Please sign in with Google to generate more documentation.');
+        return;
+    }
+
     const code = document.getElementById('code').value;
     const jira = document.getElementById('jira').value;
 
@@ -104,6 +114,9 @@ document.getElementById('doc-form').addEventListener('submit', async function(e)
         const result = await response.json();
 
         if (result.documentation) {
+            // Increment generation count
+            generationCount++;
+
             // Populate the modal panes
             document.getElementById('markdownContent').innerText = result.documentation;
             document.getElementById('renderedContent').innerHTML = marked.parse(result.documentation);
