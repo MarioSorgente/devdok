@@ -1,5 +1,89 @@
 // generator-doc.js
 
+// Firebase Authentication and Feedback
+function setupAuthAndFeedback() {
+    const loginButton = document.getElementById('login-button');
+    const logoutButton = document.getElementById('logout-button');
+    const feedbackButton = document.getElementById('feedback-button');
+    const feedbackModal = $('#feedbackModal');
+    const feedbackForm = document.getElementById('feedback-form');
+    const feedbackText = document.getElementById('feedback-text');
+
+    // Authentication State Observer
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // User is signed in
+            loginButton.style.display = 'none';
+            logoutButton.style.display = 'inline-block';
+            console.log('User signed in:', user.displayName);
+        } else {
+            // No user is signed in
+            loginButton.style.display = 'inline-block';
+            logoutButton.style.display = 'none';
+            console.log('No user signed in.');
+        }
+    });
+
+    // Login Button Click
+    loginButton.addEventListener('click', function() {
+        var provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+            console.log('User signed in:', result.user.displayName);
+        }).catch(function(error) {
+            console.error('Error during sign-in:', error);
+        });
+    });
+
+    // Logout Button Click
+    logoutButton.addEventListener('click', function() {
+        firebase.auth().signOut().then(function() {
+            console.log('User signed out.');
+        }).catch(function(error) {
+            console.error('Error during sign-out:', error);
+        });
+    });
+
+    // Feedback Button Click
+    feedbackButton.addEventListener('click', function() {
+        // Check if user is signed in
+        if (firebase.auth().currentUser) {
+            feedbackModal.modal('show');
+        } else {
+            alert('Please sign in with Google to send feedback.');
+        }
+    });
+
+    // Feedback Form Submission
+    feedbackForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const feedback = feedbackText.value.trim();
+        const user = firebase.auth().currentUser;
+
+        if (user && feedback) {
+            // Save feedback to Firestore
+            firebase.firestore().collection('feedback').add({
+                uid: user.uid,
+                displayName: user.displayName,
+                email: user.email,
+                feedback: feedback,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(function() {
+                alert('Thank you for your feedback!');
+                feedbackText.value = '';
+                feedbackModal.modal('hide');
+            })
+            .catch(function(error) {
+                console.error('Error submitting feedback:', error);
+                alert('Error submitting feedback. Please try again later.');
+            });
+        } else {
+            alert('Please enter your feedback.');
+        }
+    });
+}
+
+// Existing code for document generation and copying
 document.getElementById('doc-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const code = document.getElementById('code').value;
@@ -56,7 +140,7 @@ document.getElementById('copyMarkdownButton').addEventListener('click', function
     });
 });
 
-// Copy Rendered HTML to Clipboard (Ready for Notion)
+// Copy Rendered HTML to Clipboard
 document.getElementById('copyRenderedButton').addEventListener('click', function() {
     const renderedContent = document.getElementById('renderedContent').innerHTML;
     // Create a temporary textarea to copy HTML
@@ -73,14 +157,19 @@ document.getElementById('copyRenderedButton').addEventListener('click', function
         }, 2000);
     } catch (err) {
         console.error('Could not copy text: ', err);
-        alert('Failed to copy for Notion.');
+        alert('Failed to copy rendered content.');
     }
     document.body.removeChild(tempTextarea);
 });
 
-// Optional: Close the modal and clear content
+// Close the modal and clear content
 document.getElementById('modalCloseButton').addEventListener('click', function() {
     // Clear content if needed
     document.getElementById('markdownContent').innerText = '';
     document.getElementById('renderedContent').innerHTML = '';
 });
+
+// Initialize Authentication and Feedback when the page loads
+window.onload = function() {
+    setupAuthAndFeedback();
+};
