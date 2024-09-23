@@ -36,14 +36,14 @@
     <!-- Initialize Firebase -->
     <script>
       // Your web app's Firebase configuration
-    const firebaseConfig = {
+     const firebaseConfig = {
         apiKey: "AIzaSyAYIv_q2cRlAro1rsnzcXutYxW_ginonIY",
         authDomain: "devdok-5da05.firebaseapp.com",
         projectId: "devdok-5da05",
         storageBucket: "devdok-5da05.appspot.com",
         messagingSenderId: "924117031294",
         appId: "1:924117031294:web:af6ab6958815ba45517b2f"
-  };
+      };
       // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
     </script>
@@ -84,7 +84,6 @@
                 <textarea class="form-control" id="jira" name="jira" rows="4" placeholder="Enter Jira ticket details..."></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Generate</button>
-            <button type="button" class="btn btn-secondary mt-3" id="feedback-button">Send Feedback</button>
         </form>
         <!-- Hidden Output Div (no longer used) -->
         <div id="output"></div>
@@ -120,6 +119,10 @@
                     </div>
                     <div id="renderedContent" class="border p-3 rounded"></div>
                 </div>
+            </div>
+            <!-- Send Feedback Button -->
+            <div class="text-center">
+                <button type="button" class="btn btn-secondary mt-3" id="feedback-button">Send Feedback</button>
             </div>
           </div>
         </div>
