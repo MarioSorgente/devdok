@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>DevDok - Automatically document your tickets</title>
@@ -7,22 +8,31 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
     <!-- Meta Description -->
-    <meta name="description" content="DevDok helps developers generate comprehensive documentation for their code automatically. Transform your code and Jira tickets into clear, structured documentation for Notion and Confluence." />
+    <meta name="description" content="Generate comprehensive documentation for your code automatically with DevDok. Transform your code and Jira tickets into clear, structured documentation." />
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="DevDok - Automatically document your tickets" />
     <meta property="og:description" content="Transform your code and Jira tickets into comprehensive documentation with DevDok." />
-    <meta property="og:image" content="duck.png" />
+    <meta property="og:image" content="favicon.ico" />
     <meta property="og:url" content="https://www.devdok.com/" />
-    
-    <!-- Bootstrap CSS and other links -->
-    <!-- ... rest of your head content ... -->
+
+    <!-- Bootstrap CSS -->
+    <link
+        rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Include marked.js library for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container generator-container">
+        <div class="container">
             <!-- Logo links back to home page -->
             <a class="navbar-brand" href="index.html">
                 <img src="duck.png" alt="DevDok Logo" class="navbar-logo">
@@ -33,14 +43,14 @@
 
     <!-- Hero Section -->
     <div class="hero">
-        <div class="container generator-container">
+        <div class="container">
             <h1>Generate documentation for your code</h1>
             <p>Turn your code snippets into comprehensive documentation.</p>
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="container generator-container">
+    <div class="container mt-5">
         <form id="doc-form">
             <div class="form-group">
                 <label for="code">Code Snippet:</label>
@@ -57,8 +67,8 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="outputModal" tabindex="-1" role="dialog" aria-labelledby="outputModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-xl" role="document"> <!-- Changed to modal-xl for larger size -->
+    <div class="modal fade modal-fullscreen" id="outputModal" tabindex="-1" role="dialog" aria-labelledby="outputModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document"> <!-- Removed modal-xl -->
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="outputModalLabel">Generated Documentation</h5>
@@ -72,16 +82,16 @@
                 <div class="col-md-6 mb-4">
                     <h5>Markdown</h5>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <button class="btn btn-secondary btn-sm" id="copyMarkdownButton">Copy Markdown</button>
+                        <button class="btn btn-secondary btn-sm" id="copyMarkdownButton">Copy</button>
                         <span id="markdownStatus" class="text-success" style="display: none;">Copied!</span>
                     </div>
-                    <pre id="markdownContent" class="border p-3 rounded"></pre>
+                    <pre id="markdownContent" class="border p-3 rounded" style="white-space: pre-wrap;"></pre>
                 </div>
                 <!-- Rendered Content Pane -->
                 <div class="col-md-6 mb-4">
                     <h5>Rendered Documentation</h5>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <button class="btn btn-secondary btn-sm" id="copyRenderedButton">Copy for Notion</button>
+                        <button class="btn btn-secondary btn-sm" id="copyRenderedButton">Copy</button>
                         <span id="renderedStatus" class="text-success" style="display: none;">Copied!</span>
                     </div>
                     <div id="renderedContent" class="border p-3 rounded"></div>
