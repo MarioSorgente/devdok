@@ -26,15 +26,16 @@ function setupAuthAndFeedback() {
         }
     });
 
-    // Login Button Click
-    loginButton.addEventListener('click', function() {
-        var provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(provider).then(function(result) {
-            console.log('User signed in:', result.user.displayName);
-        }).catch(function(error) {
-            console.error('Error during sign-in:', error);
-        });
+  // Login Button Click
+loginButton.addEventListener('click', function() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).then(function(result) {
+        console.log('User signed in:', result.user.displayName);
+    }).catch(function(error) {
+        console.error('Error during sign-in:', error);
+        alert('Error during sign-in: ' + error.message);
     });
+});
 
     // Logout Button Click
     logoutButton.addEventListener('click', function() {
@@ -44,6 +45,8 @@ function setupAuthAndFeedback() {
             console.error('Error during sign-out:', error);
         });
     });
+
+    
 
     // Feedback Button Click
     feedbackButton.addEventListener('click', function() {
