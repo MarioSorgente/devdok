@@ -10,10 +10,6 @@
     <!-- Meta Description -->
     <meta name="description" content="DevDok helps developers generate comprehensive documentation for their code automatically. Transform your code and Jira tickets into clear, structured documentation for Notion and Confluence." />
 
-    <!-- Cookie Consent by Osano -->
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent/3.1.1/cookieconsent.min.css" integrity="sha512-4V3IdNawANqFGhF+Zc03ldvho0hL8YxT6t5IxiKdOos3KXcXe2uZ5/5v1edrllOPt05B36lyhBM0Paej1WdfxQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="DevDok - Automatically document your tickets" />
     <meta property="og:description" content="Transform your code and Jira tickets into comprehensive documentation with DevDok." />
@@ -28,7 +24,8 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
-      <!-- Google tag (gtag.js) -->
+
+    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16604410913"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -37,6 +34,50 @@
 
       gtag('config', 'AW-16604410913');
     </script>
+
+    <!-- Custom Cookie Banner Styles -->
+    <style>
+        /* Cookie Banner Styles */
+        #cookie-banner {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #f8f9fa;
+            color: #343a40;
+            padding: 15px;
+            text-align: center;
+            z-index: 9999;
+        }
+
+        #cookie-banner span {
+            font-size: 14px;
+        }
+
+        #cookie-banner button {
+            margin-left: 15px;
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #cookie-banner button:hover {
+            background-color: #0056b3;
+        }
+
+        #cookie-banner a {
+            margin-left: 10px;
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        #cookie-banner a:hover {
+            color: #0056b3;
+        }
+    </style>
 </head>
 
 <body>
@@ -52,32 +93,14 @@
         </div>
     </div>
 
-    <!-- Cookie Consent by Osano -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent/3.1.1/cookieconsent.min.js" integrity="sha512-A7bAv/wtSkR8c8m6F2sV6VfDhJYKt9YwxV9BtDwNpjgMxht7Ggk2PGhNQzqktDLEUp2gRURi80I+h9OU73bg8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-    window.addEventListener("load", function(){
-    window.cookieconsent.initialise({
-      "palette": {
-        "popup": {
-          "background": "#f8f9fa",
-          "text": "#343a40"
-        },
-        "button": {
-          "background": "#007bff",
-          "text": "#ffffff"
-        }
-      },
-      "theme": "classic",
-      "position": "bottom",
-      "content": {
-        "message": "We use cookies to enhance your browsing experience.",
-        "dismiss": "Accept",
-        "link": "Privacy Policy",
-        "href": "privacy.html"
-      }
-    })});
-    </script>
-
+    <!-- Cookie Banner -->
+    <div id="cookie-banner">
+        <span>
+            We use cookies to enhance your browsing experience.
+            <a href="privacy.html">Privacy Policy</a>
+        </span>
+        <button id="accept-cookies">Accept</button>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -89,6 +112,26 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> <!-- Full jQuery -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Custom Cookie Banner Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if the user has already accepted cookies
+            if (!localStorage.getItem('cookiesAccepted')) {
+                document.getElementById('cookie-banner').style.display = 'block';
+            }
+
+            // Handle the accept button click
+            document.getElementById('accept-cookies').addEventListener('click', function() {
+                localStorage.setItem('cookiesAccepted', 'true');
+                document.getElementById('cookie-banner').style.display = 'none';
+
+                // Initialize Google Analytics or other tracking scripts here
+                // For example:
+                // gtag('config', 'AW-16604410913');
+            });
+        });
+    </script>
 </body>
 
 </html>
