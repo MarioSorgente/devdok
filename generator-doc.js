@@ -59,7 +59,42 @@ function setupAuthAndFeedback() {
     });
 
     // Feedback Button Click
-    // (If you have feedback functionality, include it here)
+  feedbackButton.addEventListener('click', function() {
+        // Check if user is signed in
+        if (firebase.auth().currentUser) {
+            feedbackModal.modal('show');
+        } else {
+            alert('Please sign in with Google to send feedback.');
+        }
+    });
+
+    // Feedback Form Submission
+    feedbackForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const feedback = feedbackText.value.trim();
+        const user = firebase.auth().currentUser;
+
+        if (user && feedback) {
+            // Save feedback to Firestore
+            firebase.firestore().collection('feedback').add({
+                uid: user.uid,
+                displayName: user.displayName,
+                email: user.email,
+                feedback: feedback,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(function() {
+                alert('Thank you for your feedback!');
+                feedbackText.value = '';
+                feedbackModal.modal('hide');
+            })
+            .catch(function(error) {
+                console.error('Error submitting feedback:', error);
+                alert('Error submitting feedback. Please try again later.');
+            });
+        } else {
+            alert('Please enter your feedback.');
+        }
 }
 
 // Function to handle input method toggle
