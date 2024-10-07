@@ -7,32 +7,39 @@ const openai_api_key = process.env.OPENAI_API_KEY;
 const github_access_token = process.env.GITHUB_ACCESS_TOKEN; // From Vercel environment variables
 
 module.exports = async function (req, res) {
-  if (req.method !== 'POST') {
-    res.status(405).send({ message: 'Only POST requests allowed' });
-    return;
-  }
-
-  let { code, jira, inputMethod, githubFileUrl } = req.body;
-
-  // If inputMethod is 'githubFile', fetch code from GitHub
-  if (inputMethod === 'githubFile') {
-    try {
-      code = await fetchCodeFromGitHubFile(githubFileUrl);
-    } catch (error) {
-      console.error('Error fetching code from GitHub:', error);
-      res.status(500).json({ error: error.message });
+  try {
+    if (req.method !== 'POST') {
+      res.status(405).send({ message: 'Only POST requests allowed' });
       return;
     }
-  }
 
-  // Check if the code exceeds token limits
-  const maxCodeLength = 5000; // Adjust based on OpenAI API token limits
-  if (code.length > maxCodeLength) {
-    res.status(400).json({ error: 'The selected code is too large to process. Please select a smaller file or code snippet.' });
-    return;
-  }
+    let { code, jira, inputMethod, githubFileUrl } = req.body;
 
-  const prompt = `
+    // If inputMethod is 'githubFile', fetch code from GitHub
+    if (inputMethod === 'githubFile') {
+      try {
+        code = await fetchCodeFromGitHubFile(githubFileUrl);
+      } catch (error) {
+        console.error('Error fetching code from GitHub:', error);
+        res.status(500).json({ error: error.message });
+        return;
+      }
+    }
+
+    // Check if the code is empty
+    if (!code) {
+      res.status(400).json({ error: 'No code provided for documentation.' });
+      return;
+    }
+
+    // Check if the code exceeds token limits
+    const maxCodeLength = 5000; // Adjust based on OpenAI API token limits
+    if (code.length > maxCodeLength) {
+      res.status(400).json({ error: 'The selected code is too large to process. Please select a smaller file or code snippet.' });
+      return;
+    }
+
+    const prompt = `
 You are an AI assistant that helps developers create clear and concise documentation for their code. Based on the provided code snippet and associated context information, generate comprehensive documentation in **Markdown format compatible with Notion**.
 
 **Instructions:**
@@ -77,42 +84,44 @@ ${jira}
 Provide the documentation below:
 `;
 
-  try {
-    const completion = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openai_api_key}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
-          { role: 'user', content: prompt }
-        ],
-        max_tokens: 1500,
-        temperature: 0.7,
-      })
-    });
+    try {
+      const completion = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${openai_api_key}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-3.5-turbo',
+          messages: [
+            { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 1500,
+          temperature: 0.7,
+        })
+      });
 
-    const data = await completion.json();
+      const data = await completion.json();
 
-    if (completion.ok) {
-      const documentation = data.choices[0].message.content.trim();
-      res.status(200).json({ documentation });
-    } else {
-      console.error('OpenAI API error:', data);
-      res.status(500).json({ error: 'Error from OpenAI API', details: data });
+      if (completion.ok) {
+        const documentation = data.choices[0].message.content.trim();
+        res.status(200).json({ documentation });
+      } else {
+        console.error('OpenAI API error:', data);
+        res.status(500).json({ error: 'Error from OpenAI API', details: data });
+      }
+    } catch (error) {
+      console.error('Error during OpenAI API request:', error);
+      res.status(500).json({ error: 'Error generating documentation', details: error.message });
     }
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Error generating documentation', details: error.message });
+    console.error('Unhandled error:', error);
+    res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 };
 
 // Function to fetch code from a GitHub file URL
-const { URL } = require('url');
-
 async function fetchCodeFromGitHubFile(fileUrl) {
   try {
     const url = new URL(fileUrl);
@@ -132,8 +141,14 @@ async function fetchCodeFromGitHubFile(fileUrl) {
 
     // The branch can contain slashes, so we need to find the index of 'blob'
     const blobIndex = pathParts.indexOf('blob');
-    const branch = pathParts[blobIndex + 1];
-    const filePath = pathParts.slice(blobIndex + 2).join('/');
+    const branchAndPath = pathParts.slice(blobIndex + 1);
+
+    if (branchAndPath.length < 2) {
+      throw new Error('Invalid GitHub file URL format.');
+    }
+
+    const branch = branchAndPath[0];
+    const filePath = branchAndPath.slice(1).join('/');
 
     if (!owner || !repo || !branch || !filePath) {
       throw new Error('Failed to parse GitHub URL components.');
@@ -165,10 +180,10 @@ async function fetchCodeFromGitHubFile(fileUrl) {
 
     // Check file size (assuming UTF-8 encoding)
     const fileSizeInBytes = Buffer.byteLength(code, 'utf8');
-    const maxFileSize = 100 * 1024; // 100KB
+    const maxFileSize = 20 * 1024; // 20KB
 
     if (fileSizeInBytes > maxFileSize) {
-      throw new Error('File size exceeds 100KB limit.');
+      throw new Error('File size exceeds 20KB limit.');
     }
 
     return code;
