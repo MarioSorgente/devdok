@@ -98,7 +98,7 @@ function setupInputMethodToggle() {
         if (codeSnippetOption.checked) {
             codeSnippetInput.style.display = 'block';
             githubFileInput.style.display = 'none';
-            contextLabel.innerText = 'Jira Ticket Details:';
+            contextLabel.innerText = 'Jira Ticket Details or General Context:';
             document.getElementById('code').required = true;
             document.getElementById('githubFileUrl').required = false;
         } else if (githubFileOption.checked) {
