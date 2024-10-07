@@ -1,6 +1,7 @@
 // api/generate-doc.js
 
 const fetch = require('node-fetch');
+const { URL } = require('url');
 
 const openai_api_key = process.env.OPENAI_API_KEY;
 const github_access_token = process.env.GITHUB_ACCESS_TOKEN; // From Vercel environment variables
@@ -19,7 +20,7 @@ module.exports = async function (req, res) {
       code = await fetchCodeFromGitHubFile(githubFileUrl);
     } catch (error) {
       console.error('Error fetching code from GitHub:', error);
-      res.status(500).json({ error: 'Failed to fetch code from GitHub.' });
+      res.status(500).json({ error: error.message });
       return;
     }
   }
@@ -110,26 +111,53 @@ Provide the documentation below:
 };
 
 // Function to fetch code from a GitHub file URL
+const { URL } = require('url');
+
 async function fetchCodeFromGitHubFile(fileUrl) {
-  // Convert the GitHub file URL to a raw file URL
-  const rawUrl = fileUrl
-    .replace('github.com', 'raw.githubusercontent.com')
-    .replace('/blob/', '/');
-
-  // Headers for the request
-  const headers = {};
-
-  // Include personal access token if available
-  if (github_access_token) {
-    headers['Authorization'] = `token ${github_access_token}`;
-  }
-
   try {
+    const url = new URL(fileUrl);
+
+    if (url.hostname !== 'github.com') {
+      throw new Error('Invalid GitHub URL.');
+    }
+
+    const pathParts = url.pathname.split('/');
+
+    if (pathParts[3] !== 'blob') {
+      throw new Error('Invalid GitHub file URL.');
+    }
+
+    const owner = pathParts[1];
+    const repo = pathParts[2];
+
+    // The branch can contain slashes, so we need to find the index of 'blob'
+    const blobIndex = pathParts.indexOf('blob');
+    const branch = pathParts[blobIndex + 1];
+    const filePath = pathParts.slice(blobIndex + 2).join('/');
+
+    if (!owner || !repo || !branch || !filePath) {
+      throw new Error('Failed to parse GitHub URL components.');
+    }
+
+    const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath}`;
+
+    console.log('Raw URL:', rawUrl);
+
+    // Headers for the request
+    const headers = {};
+
+    // Include personal access token if available
+    if (github_access_token) {
+      headers['Authorization'] = `token ${github_access_token}`;
+    }
+
     const response = await fetch(rawUrl, {
       headers: headers
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response from GitHub:', errorText);
       throw new Error(`GitHub raw content error: ${response.statusText}`);
     }
 
@@ -145,6 +173,6 @@ async function fetchCodeFromGitHubFile(fileUrl) {
 
     return code;
   } catch (error) {
-    throw error;
+    throw new Error('Failed to fetch code from GitHub: ' + error.message);
   }
 }
