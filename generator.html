@@ -26,24 +26,32 @@
     <!-- Include marked.js library for Markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <!-- Firebase JS SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <!-- Firebase Modular SDK -->
+    <!-- Import the functions you need from the SDKs you need -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
-    <!-- Initialize Firebase -->
-    <script>
-      // Your web app's Firebase configuration
-      var firebaseConfig = {
-          apiKey: "YOUR_FIREBASE_API_KEY",
-          authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
-          projectId: "YOUR_FIREBASE_PROJECT_ID",
-          storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
-          messagingSenderId: "YOUR_FIREBASE_MESSAGING_SENDER_ID",
-          appId: "YOUR_FIREBASE_APP_ID"
-      };
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "devdok-5da05.firebaseapp.com",
+            projectId: "devdok-5da05",
+            storageBucket: "devdok-5da05.appspot.com",
+            messagingSenderId: "924117031294",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Make auth and db accessible globally
+        window.auth = auth;
+        window.db = db;
     </script>
 
     <!-- Google Analytics (Optional, move initialization to after consent) -->
@@ -109,7 +117,7 @@
                     <small class="form-text text-muted">Example: https://github.com/username/repo/blob/branch/path/to/file.py</small>
                 </div>
                 <div class="alert alert-info">
-                    Please ensure the file size is under 100KB to stay within processing limits.
+                    Please ensure the file size is under <strong>30KB</strong> to stay within processing limits.
                 </div>
             </div>
 
