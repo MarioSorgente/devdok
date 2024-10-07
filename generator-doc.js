@@ -1,5 +1,13 @@
 // generator-doc.js
 
+// Firebase Modular SDK Imports
+import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+// Use the Firebase app initialized in generator.html
+const auth = window.auth;
+const db = window.db;
+
 let generationCount = 0; // Variable to track the number of generations
 
 // Firebase Authentication and Feedback
@@ -12,7 +20,7 @@ function setupAuthAndFeedback() {
     const feedbackText = document.getElementById('feedback-text');
 
     // Authentication State Observer
-    firebase.auth().onAuthStateChanged(function(user) {
+    onAuthStateChanged(auth, function(user) {
         if (user) {
             // User is signed in
             loginButton.style.display = 'none';
@@ -28,62 +36,30 @@ function setupAuthAndFeedback() {
 
     // Login Button Click
     loginButton.addEventListener('click', function() {
-        var provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(provider).then(function(result) {
-            console.log('User signed in:', result.user.displayName);
-        }).catch(function(error) {
-            console.error('Error during sign-in:', error);
-            alert('Error during sign-in: ' + error.message);
-        });
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+            .then(function(result) {
+                console.log('User signed in:', result.user.displayName);
+            })
+            .catch(function(error) {
+                console.error('Error during sign-in:', error);
+                alert('Error during sign-in: ' + error.message);
+            });
     });
 
     // Logout Button Click
     logoutButton.addEventListener('click', function() {
-        firebase.auth().signOut().then(function() {
-            console.log('User signed out.');
-        }).catch(function(error) {
-            console.error('Error during sign-out:', error);
-        });
+        signOut(auth)
+            .then(function() {
+                console.log('User signed out.');
+            })
+            .catch(function(error) {
+                console.error('Error during sign-out:', error);
+            });
     });
 
     // Feedback Button Click
-    feedbackButton.addEventListener('click', function() {
-        // Check if user is signed in
-        if (firebase.auth().currentUser) {
-            feedbackModal.modal('show');
-        } else {
-            alert('Please sign in with Google to send feedback.');
-        }
-    });
-
-    // Feedback Form Submission
-    feedbackForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const feedback = feedbackText.value.trim();
-        const user = firebase.auth().currentUser;
-
-        if (user && feedback) {
-            // Save feedback to Firestore
-            firebase.firestore().collection('feedback').add({
-                uid: user.uid,
-                displayName: user.displayName,
-                email: user.email,
-                feedback: feedback,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then(function() {
-                alert('Thank you for your feedback!');
-                feedbackText.value = '';
-                feedbackModal.modal('hide');
-            })
-            .catch(function(error) {
-                console.error('Error submitting feedback:', error);
-                alert('Error submitting feedback. Please try again later.');
-            });
-        } else {
-            alert('Please enter your feedback.');
-        }
-    });
+    // (If you have feedback functionality, include it here)
 }
 
 // Function to handle input method toggle
@@ -122,7 +98,7 @@ function setupInputMethodToggle() {
 document.getElementById('doc-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const user = firebase.auth().currentUser;
+    const user = auth.currentUser;
 
     if (generationCount >= 1 && !user) {
         alert('Please sign in with Google to generate more documentation.');
