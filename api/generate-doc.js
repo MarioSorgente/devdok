@@ -33,45 +33,16 @@ module.exports = async function (req, res) {
     }
 
     // Check if the code exceeds token limits
-    const maxCodeLength = 5000; // Adjust based on OpenAI API token limits
+    const maxCodeLength = 9000; // Increased to allow larger code
     if (code.length > maxCodeLength) {
       res.status(400).json({ error: 'The selected code is too large to process. Please select a smaller file or code snippet.' });
       return;
     }
 
-    const prompt = `
-You are an AI assistant that helps developers create clear and concise documentation for their code. Based on the provided code snippet and associated context information, generate comprehensive documentation in **Markdown format compatible with Notion**.
+    console.log('Code length:', code.length);
 
-**Instructions:**
-* **Understand the Context:**
-  * Carefully read the code snippet to grasp its functionality.
-  * Review the context details for additional information and requirements.
-* **Generate Documentation Including:**
-  * **Title**: A clear and descriptive title for the code component.
-  * **Summary**: A brief overview of what the code does and its purpose within the project.
-  * **Detailed Explanation:**
-    * Explain key functions, classes, and methods.
-    * Describe interactions between different parts of the code.
-    * Highlight important algorithms or logic.
-    * Suggest unit tests.
-    * Provide and fill in a pull request template.
-  * **Usage Instructions:**
-    * Provide examples of how to use the code.
-    * Include any prerequisites or dependencies.
-  * **Notes and Recommendations:**
-    * Mention limitations, assumptions, or important considerations.
-    * Suggest potential improvements or alternatives if applicable.
-* **Formatting Guidelines:**
-  * Use Markdown syntax compatible with **Notion**:
-    * **Headings**: Use # for headings (e.g., #, ##, ###).
-    * **Code Blocks**: Enclose code snippets within triple backticks (\`\`\`) and specify the language (e.g., \`\`\`python).
-    * **Lists**: Use hyphens (-) for bullet points and numbers followed by periods (1.) for numbered lists.
-    * **Bold and Italics**: Use double asterisks (**) for bold and single asterisks (*) or underscores (_) for italics.
-    * **Inline Code**: Use single backticks (\`) for inline code.
-  * **Avoid**:
-    * Advanced Markdown features that may not render properly in Notion (e.g., HTML tags, footnotes).
-    * Unnecessary whitespace or special characters.
-* **Ensure** that the output is clean and well-structured for easy reading in Notion.
+    const prompt = `
+Generate clear and concise documentation for the following code in Markdown format compatible with Notion.
 
 **Code Snippet:**
 \`\`\`
@@ -85,6 +56,8 @@ Provide the documentation below:
 `;
 
     try {
+      console.log('Sending request to OpenAI API...');
+
       const completion = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -97,12 +70,14 @@ Provide the documentation below:
             { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
             { role: 'user', content: prompt }
           ],
-          max_tokens: 1500,
+          max_tokens: 1500, // Adjusted to stay within token limits
           temperature: 0.7,
         })
       });
 
       const data = await completion.json();
+
+      console.log('OpenAI API response:', data);
 
       if (completion.ok) {
         const documentation = data.choices[0].message.content.trim();
@@ -180,11 +155,13 @@ async function fetchCodeFromGitHubFile(fileUrl) {
 
     // Check file size (assuming UTF-8 encoding)
     const fileSizeInBytes = Buffer.byteLength(code, 'utf8');
-    const maxFileSize = 20 * 1024; // 20KB
+    const maxFileSize = 30 * 1024; // 30KB
 
     if (fileSizeInBytes > maxFileSize) {
-      throw new Error('File size exceeds 20KB limit.');
+      throw new Error('File size exceeds 30KB limit.');
     }
+
+    console.log('Fetched code size:', fileSizeInBytes, 'bytes');
 
     return code;
   } catch (error) {
