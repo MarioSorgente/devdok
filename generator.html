@@ -26,32 +26,24 @@
     <!-- Include marked.js library for Markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <!-- Firebase Modular SDK -->
-    <!-- Import the functions you need from the SDKs you need -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+    <!-- Firebase JS SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
-        // Your web app's Firebase configuration
-         const firebaseConfig = {
-            apiKey: "AIzaSyAYIv_q2cRlAro1rsnzcXutYxW_ginonIY",
-            authDomain: "devdok-5da05.firebaseapp.com",
-            projectId: "devdok-5da05",
-            storageBucket: "devdok-5da05.appspot.com",
-            messagingSenderId: "924117031294",
-            appId: "1:924117031294:web:af6ab6958815ba45517b2f"
-          };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // Make auth and db accessible globally
-        window.auth = auth;
-        window.db = db;
+    <!-- Initialize Firebase -->
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyAYIv_q2cRlAro1rsnzcXutYxW_ginonIY",
+        authDomain: "devdok-5da05.firebaseapp.com",
+        projectId: "devdok-5da05",
+        storageBucket: "devdok-5da05.appspot.com",
+        messagingSenderId: "924117031294",
+        appId: "1:924117031294:web:af6ab6958815ba45517b2f"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
     </script>
 
     <!-- Google Analytics (Optional, move initialization to after consent) -->
@@ -117,7 +109,7 @@
                     <small class="form-text text-muted">Example: https://github.com/username/repo/blob/branch/path/to/file.py</small>
                 </div>
                 <div class="alert alert-info">
-                    Please ensure the file size is under <strong>30KB</strong> to stay within processing limits.
+                    Please ensure the file size is under 100KB to stay within processing limits.
                 </div>
             </div>
 
@@ -132,7 +124,7 @@
         <!-- Hidden Output Div (no longer used) -->
         <div id="output"></div>
     </div>
-
+    
     <!-- Modal -->
     <div class="modal fade modal-fullscreen" id="outputModal" tabindex="-1" role="dialog" aria-labelledby="outputModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document"> <!-- Removed modal-xl -->
