@@ -1,11 +1,4 @@
 {
-  "name": "devdok",
-  "version": "1.0.0",
-  "description": "DevDok Application",
-  "main": "api/generate-doc.js",
-  "scripts": {
-    "start": "node api/generate-doc.js"
-  },
   "dependencies": {
     "node-fetch": "^2.6.7"
   }
