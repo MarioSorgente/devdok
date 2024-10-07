@@ -25,7 +25,7 @@ module.exports = async function (req, res) {
   }
 
   // Check if the code exceeds token limits
-  const maxCodeLength = 5000; // Adjust based on OpenAI API token limits
+  const maxCodeLength = 15000; // Adjust based on OpenAI API token limits
   if (code.length > maxCodeLength) {
     res.status(400).json({ error: 'The selected code is too large to process. Please select a smaller file or code snippet.' });
     return;
@@ -84,12 +84,12 @@ Provide the documentation below:
         'Authorization': `Bearer ${openai_api_key}`
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-3.5-turbo-16k',
         messages: [
           { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
           { role: 'user', content: prompt }
         ],
-        max_tokens: 1500,
+        max_tokens: 4000,
         temperature: 0.7,
       })
     });
@@ -137,7 +137,7 @@ async function fetchCodeFromGitHubFile(fileUrl) {
 
     // Check file size (assuming UTF-8 encoding)
     const fileSizeInBytes = Buffer.byteLength(code, 'utf8');
-    const maxFileSize = 100 * 1024; // 100KB
+    const maxFileSize = 50 * 1024; // 50KB
 
     if (fileSizeInBytes > maxFileSize) {
       throw new Error('File size exceeds 100KB limit.');
