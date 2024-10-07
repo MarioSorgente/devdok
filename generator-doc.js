@@ -26,16 +26,16 @@ function setupAuthAndFeedback() {
         }
     });
 
-  // Login Button Click
-loginButton.addEventListener('click', function() {
-    var provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider).then(function(result) {
-        console.log('User signed in:', result.user.displayName);
-    }).catch(function(error) {
-        console.error('Error during sign-in:', error);
-        alert('Error during sign-in: ' + error.message);
+    // Login Button Click
+    loginButton.addEventListener('click', function() {
+        var provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+            console.log('User signed in:', result.user.displayName);
+        }).catch(function(error) {
+            console.error('Error during sign-in:', error);
+            alert('Error during sign-in: ' + error.message);
+        });
     });
-});
 
     // Logout Button Click
     logoutButton.addEventListener('click', function() {
@@ -45,8 +45,6 @@ loginButton.addEventListener('click', function() {
             console.error('Error during sign-out:', error);
         });
     });
-
-    
 
     // Feedback Button Click
     feedbackButton.addEventListener('click', function() {
@@ -88,6 +86,38 @@ loginButton.addEventListener('click', function() {
     });
 }
 
+// Function to handle input method toggle
+function setupInputMethodToggle() {
+    const codeSnippetOption = document.getElementById('codeSnippetOption');
+    const githubFileOption = document.getElementById('githubFileOption');
+    const codeSnippetInput = document.getElementById('codeSnippetInput');
+    const githubFileInput = document.getElementById('githubFileInput');
+    const contextLabel = document.getElementById('contextLabel');
+
+    function toggleInputFields() {
+        if (codeSnippetOption.checked) {
+            codeSnippetInput.style.display = 'block';
+            githubFileInput.style.display = 'none';
+            contextLabel.innerText = 'Jira Ticket Details:';
+            document.getElementById('code').required = true;
+            document.getElementById('githubFileUrl').required = false;
+        } else if (githubFileOption.checked) {
+            codeSnippetInput.style.display = 'none';
+            githubFileInput.style.display = 'block';
+            contextLabel.innerText = 'Background and Context:';
+            document.getElementById('code').required = false;
+            document.getElementById('githubFileUrl').required = true;
+        }
+    }
+
+    // Add event listeners
+    codeSnippetOption.addEventListener('change', toggleInputFields);
+    githubFileOption.addEventListener('change', toggleInputFields);
+
+    // Initial call to set the correct state
+    toggleInputFields();
+}
+
 // Existing code for document generation and copying
 document.getElementById('doc-form').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -99,8 +129,27 @@ document.getElementById('doc-form').addEventListener('submit', async function(e)
         return;
     }
 
-    const code = document.getElementById('code').value;
+    // Determine the input method
+    const inputMethod = document.querySelector('input[name="inputMethod"]:checked').value;
+
+    let code = '';
     const jira = document.getElementById('jira').value;
+
+    let githubFileUrl = '';
+
+    if (inputMethod === 'codeSnippet') {
+        code = document.getElementById('code').value;
+    } else if (inputMethod === 'githubFile') {
+        githubFileUrl = document.getElementById('githubFileUrl').value;
+
+        // Validate inputs
+        if (!githubFileUrl) {
+            alert('Please provide the GitHub file URL.');
+            return;
+        }
+
+        // No need to fetch code on client-side; send details to server
+    }
 
     // Disable the submit button to prevent multiple submissions
     const submitButton = e.target.querySelector('button[type="submit"]');
@@ -111,7 +160,7 @@ document.getElementById('doc-form').addEventListener('submit', async function(e)
         const response = await fetch('/api/generate-doc', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, jira })
+            body: JSON.stringify({ code, jira, inputMethod, githubFileUrl })
         });
 
         const result = await response.json();
@@ -188,4 +237,5 @@ document.getElementById('modalCloseButton').addEventListener('click', function()
 // Initialize Authentication and Feedback when the page loads
 window.onload = function() {
     setupAuthAndFeedback();
+    setupInputMethodToggle();
 };
