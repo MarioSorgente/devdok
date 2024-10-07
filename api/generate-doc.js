@@ -1,6 +1,9 @@
+// api/generate-doc.js
+
 const fetch = require('node-fetch');
 
 const openai_api_key = process.env.OPENAI_API_KEY;
+const github_access_token = process.env.GITHUB_ACCESS_TOKEN; // From Vercel environment variables
 
 module.exports = async function (req, res) {
   if (req.method !== 'POST') {
@@ -8,15 +11,33 @@ module.exports = async function (req, res) {
     return;
   }
 
-  const { code, jira } = req.body;
+  let { code, jira, inputMethod, githubFileUrl } = req.body;
+
+  // If inputMethod is 'githubFile', fetch code from GitHub
+  if (inputMethod === 'githubFile') {
+    try {
+      code = await fetchCodeFromGitHubFile(githubFileUrl);
+    } catch (error) {
+      console.error('Error fetching code from GitHub:', error);
+      res.status(500).json({ error: 'Failed to fetch code from GitHub.' });
+      return;
+    }
+  }
+
+  // Check if the code exceeds token limits
+  const maxCodeLength = 5000; // Adjust based on OpenAI API token limits
+  if (code.length > maxCodeLength) {
+    res.status(400).json({ error: 'The selected code is too large to process. Please select a smaller file or code snippet.' });
+    return;
+  }
 
   const prompt = `
-You are an AI assistant that helps developers create clear and concise documentation for their code. Based on the provided code snippet and associated Jira ticket information, generate comprehensive documentation in **Markdown format compatible with Notion**.
+You are an AI assistant that helps developers create clear and concise documentation for their code. Based on the provided code snippet and associated context information, generate comprehensive documentation in **Markdown format compatible with Notion**.
 
 **Instructions:**
 * **Understand the Context:**
   * Carefully read the code snippet to grasp its functionality.
-  * Review the Jira ticket details for additional context and requirements.
+  * Review the context details for additional information and requirements.
 * **Generate Documentation Including:**
   * **Title**: A clear and descriptive title for the code component.
   * **Summary**: A brief overview of what the code does and its purpose within the project.
@@ -24,8 +45,8 @@ You are an AI assistant that helps developers create clear and concise documenta
     * Explain key functions, classes, and methods.
     * Describe interactions between different parts of the code.
     * Highlight important algorithms or logic.
-    * Suggest Unit tests.
-    * Provide Pull request template
+    * Suggest unit tests.
+    * Provide a pull request template.
   * **Usage Instructions:**
     * Provide examples of how to use the code.
     * Include any prerequisites or dependencies.
@@ -49,7 +70,7 @@ You are an AI assistant that helps developers create clear and concise documenta
 ${code}
 \`\`\`
 
-**Jira Ticket Details:**
+**Context Details:**
 ${jira}
 
 Provide the documentation below:
@@ -68,7 +89,7 @@ Provide the documentation below:
           { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
           { role: 'user', content: prompt }
         ],
-        max_tokens: 1000,
+        max_tokens: 1500,
         temperature: 0.7,
       })
     });
@@ -87,3 +108,43 @@ Provide the documentation below:
     res.status(500).json({ error: 'Error generating documentation', details: error.message });
   }
 };
+
+// Function to fetch code from a GitHub file URL
+async function fetchCodeFromGitHubFile(fileUrl) {
+  // Convert the GitHub file URL to a raw file URL
+  const rawUrl = fileUrl
+    .replace('github.com', 'raw.githubusercontent.com')
+    .replace('/blob/', '/');
+
+  // Headers for the request
+  const headers = {};
+
+  // Include personal access token if available
+  if (github_access_token) {
+    headers['Authorization'] = `token ${github_access_token}`;
+  }
+
+  try {
+    const response = await fetch(rawUrl, {
+      headers: headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`GitHub raw content error: ${response.statusText}`);
+    }
+
+    const code = await response.text();
+
+    // Check file size (assuming UTF-8 encoding)
+    const fileSizeInBytes = Buffer.byteLength(code, 'utf8');
+    const maxFileSize = 100 * 1024; // 100KB
+
+    if (fileSizeInBytes > maxFileSize) {
+      throw new Error('File size exceeds 100KB limit.');
+    }
+
+    return code;
+  } catch (error) {
+    throw error;
+  }
+}
