@@ -32,38 +32,32 @@ module.exports = async function (req, res) {
   }
 
   const prompt = `
-You are an AI assistant that helps developers create clear and concise documentation for their code. Based on the provided code snippet and associated context information, generate comprehensive documentation in **Markdown format compatible with Notion**.
+You are a developer reviewing the following code snippet or file. Based on the code and any provided context, generate documentation in **Markdown format compatible with Notion**.
 
 **Instructions:**
-* **Understand the Context:**
-  * Carefully read the code snippet to grasp its functionality.
-  * Review the context details for additional information and requirements.
-* **Generate Documentation Including:**
-  * **Title**: A clear and descriptive title for the code component.
-  * **Summary**: A brief overview of what the code does and its purpose within the project.
-  * **Detailed Explanation:**
-    * Explain key functions, classes, and methods.
-    * Describe interactions between different parts of the code.
-    * Highlight important algorithms or logic.
-    * Suggest unit tests.
-    * Provide and fill in a pull request template with the main info.
-  * **Usage Instructions:**
-    * Provide examples of how to use the code.
-    * Include any prerequisites or dependencies.
-  * **Notes and Recommendations:**
-    * Mention limitations, assumptions, or important considerations.
-    * Suggest potential improvements or alternatives if applicable.
-* **Formatting Guidelines:**
-  * Use Markdown syntax compatible with **Notion**:
-    * **Headings**: Use # for headings (e.g., #, ##, ###).
-    * **Code Blocks**: Enclose code snippets within triple backticks (\`\`\`) and specify the language (e.g., \`\`\`python).
-    * **Lists**: Use hyphens (-) for bullet points and numbers followed by periods (1.) for numbered lists.
-    * **Bold and Italics**: Use double asterisks (**) for bold and single asterisks (*) or underscores (_) for italics.
-    * **Inline Code**: Use single backticks (\`) for inline code.
-  * **Avoid**:
-    * Advanced Markdown features that may not render properly in Notion (e.g., HTML tags, footnotes).
-    * Unnecessary whitespace or special characters.
-* **Ensure** that the output is clean and well-structured for easy reading in Notion.
+- **Title:** Provide a clear and descriptive title.
+- **Summary:** Write a brief overview of what the code does.
+- **Key Components:**
+  - Explain main functions, classes, or methods and everything a developer of Google would document, without making unsupported assumptions.
+- **Formatting:**
+  - Use clear headings and bullet points.
+  - Include code snippets if they aid understanding.
+-**Note:** 
+  - If the code lacks comments or is part of a larger project, please highlight the parts that need additional context or explanations to improve the accuracy of the documentation.
+
+
+**Code Snippet:**
+\`\`\`
+function calculateSum(a, b) {
+  return a + b;
+}
+\`\`\`
+
+**Context:**
+This function is part of a utility library for mathematical operations.
+
+Provide the documentation below:
+
 
 **Code Snippet:**
 \`\`\`
