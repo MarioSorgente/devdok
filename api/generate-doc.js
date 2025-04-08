@@ -78,7 +78,7 @@ Provide the documentation below:
         'Authorization': `Bearer ${openai_api_key}`
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o-mini-2024-07-18',
         messages: [
           { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
           { role: 'user', content: prompt }
@@ -134,7 +134,7 @@ async function fetchCodeFromGitHubFile(fileUrl) {
     const maxFileSize = 50 * 1024; // 50KB
 
     if (fileSizeInBytes > maxFileSize) {
-      throw new Error('File size exceeds 100KB limit.');
+      throw new Error('File size exceeds 50KB limit.');
     }
 
     return code;
