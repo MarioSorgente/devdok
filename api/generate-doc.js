@@ -78,7 +78,7 @@ Provide the documentation below:
         'Authorization': `Bearer ${openai_api_key}`
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini-2024-07-18',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
           { role: 'user', content: prompt }
