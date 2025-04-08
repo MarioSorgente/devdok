@@ -83,7 +83,7 @@ Provide the documentation below:
           { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
           { role: 'user', content: prompt }
         ],
-        max_tokens: 4000,
+        // max_tokens: 4000,
         temperature: 0.7,
       })
     });
