@@ -1,241 +1,221 @@
 // generator-doc.js
-
-let generationCount = 0; // Variable to track the number of generations
-
-// Firebase Authentication and Feedback
-function setupAuthAndFeedback() {
+// Firebase Auth & UI Management
+const initAuth = () => {
+    const auth = firebase.auth();
     const loginButton = document.getElementById('login-button');
     const logoutButton = document.getElementById('logout-button');
-    const feedbackButton = document.getElementById('feedback-button');
-    const feedbackModal = $('#feedbackModal');
-    const feedbackForm = document.getElementById('feedback-form');
-    const feedbackText = document.getElementById('feedback-text');
+    const greeting = document.getElementById('user-greeting');
 
-    // Authentication State Observer
-    firebase.auth().onAuthStateChanged(function(user) {
+    auth.onAuthStateChanged(user => {
         if (user) {
-            // User is signed in
             loginButton.style.display = 'none';
             logoutButton.style.display = 'inline-block';
-            console.log('User signed in:', user.displayName);
+            greeting.textContent = `👋 Hey ${user.displayName.split(' ')[0]}!`;
+            localStorage.setItem('devdokUser', user.uid);
         } else {
-            // No user is signed in
             loginButton.style.display = 'inline-block';
             logoutButton.style.display = 'none';
-            console.log('No user signed in.');
+            greeting.textContent = '';
+            localStorage.removeItem('devdokUser');
         }
     });
 
-    // Login Button Click
-    loginButton.addEventListener('click', function() {
-        var provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(provider).then(function(result) {
-            console.log('User signed in:', result.user.displayName);
-        }).catch(function(error) {
-            console.error('Error during sign-in:', error);
-            alert('Error during sign-in: ' + error.message);
-        });
+    loginButton.addEventListener('click', () => handleGoogleLogin(auth));
+    logoutButton.addEventListener('click', () => auth.signOut().catch(showError));
+};
+
+// Form Handling & Documentation Generation
+const setupForm = () => {
+    const form = document.getElementById('doc-form');
+    const inputMethodToggles = document.querySelectorAll('input[name="inputMethod"]');
+    
+    form.addEventListener('submit', handleSubmit);
+    inputMethodToggles.forEach(toggle => {
+        toggle.addEventListener('change', toggleInputFields);
     });
+};
 
-    // Logout Button Click
-    logoutButton.addEventListener('click', function() {
-        firebase.auth().signOut().then(function() {
-            console.log('User signed out.');
-        }).catch(function(error) {
-            console.error('Error during sign-out:', error);
-        });
-    });
+// UI Helpers & Animations
+const setupUI = () => {
+    setupCopyButtons();
+    setupFeedback();
+    setupKeyboardShortcuts();
+    addHoverEffects();
+    toggleInputFields(); // Initial call
+};
 
-    // Feedback Button Click
-    feedbackButton.addEventListener('click', function() {
-        // Check if user is signed in
-        if (firebase.auth().currentUser) {
-            feedbackModal.modal('show');
-        } else {
-            alert('Please sign in with Google to send feedback.');
-        }
-    });
-
-    // Feedback Form Submission
-    feedbackForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const feedback = feedbackText.value.trim();
-        const user = firebase.auth().currentUser;
-
-        if (user && feedback) {
-            // Save feedback to Firestore
-            firebase.firestore().collection('feedback').add({
-                uid: user.uid,
-                displayName: user.displayName,
-                email: user.email,
-                feedback: feedback,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then(function() {
-                alert('Thank you for your feedback!');
-                feedbackText.value = '';
-                feedbackModal.modal('hide');
-            })
-            .catch(function(error) {
-                console.error('Error submitting feedback:', error);
-                alert('Error submitting feedback. Please try again later.');
-            });
-        } else {
-            alert('Please enter your feedback.');
-        }
-    });
-}
-
-// Function to handle input method toggle
-function setupInputMethodToggle() {
-    const codeSnippetOption = document.getElementById('codeSnippetOption');
-    const githubFileOption = document.getElementById('githubFileOption');
-    const codeSnippetInput = document.getElementById('codeSnippetInput');
-    const githubFileInput = document.getElementById('githubFileInput');
-    const contextLabel = document.getElementById('contextLabel');
-
-    function toggleInputFields() {
-        if (codeSnippetOption.checked) {
-            codeSnippetInput.style.display = 'block';
-            githubFileInput.style.display = 'none';
-            contextLabel.innerText = 'General Context:';
-            document.getElementById('code').required = true;
-            document.getElementById('githubFileUrl').required = false;
-        } else if (githubFileOption.checked) {
-            codeSnippetInput.style.display = 'none';
-            githubFileInput.style.display = 'block';
-            contextLabel.innerText = 'Background and Context:';
-            document.getElementById('code').required = false;
-            document.getElementById('githubFileUrl').required = true;
-        }
+// Core Functions
+const handleGoogleLogin = async (auth) => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+        await auth.signInWithPopup(provider);
+    } catch (error) {
+        showError(`🔐 Login Failed: ${error.message}`);
     }
+};
 
-    // Add event listeners
-    codeSnippetOption.addEventListener('change', toggleInputFields);
-    githubFileOption.addEventListener('change', toggleInputFields);
-
-    // Initial call to set the correct state
-    toggleInputFields();
-}
-
-// Existing code for document generation and copying
-document.getElementById('doc-form').addEventListener('submit', async function(e) {
+const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const submitButton = e.target.querySelector('button[type="submit"]');
     const user = firebase.auth().currentUser;
-
-    if (generationCount >= 1 && !user) {
-        alert('Please sign in with Google to generate more documentation.');
+    
+    if (!user && localStorage.getItem('generationCount') >= 1) {
+        showError('🔑 Please sign in to continue generating docs!');
         return;
     }
 
-    // Determine the input method
-    const inputMethod = document.querySelector('input[name="inputMethod"]:checked').value;
-
-    let code = '';
-    const jira = document.getElementById('jira').value;
-
-    let githubFileUrl = '';
-
-    if (inputMethod === 'codeSnippet') {
-        code = document.getElementById('code').value;
-    } else if (inputMethod === 'githubFile') {
-        githubFileUrl = document.getElementById('githubFileUrl').value;
-
-        // Validate inputs
-        if (!githubFileUrl) {
-            alert('Please provide the GitHub file URL.');
-            return;
-        }
-
-        // No need to fetch code on client-side; send details to server
-    }
-
-    // Disable the submit button to prevent multiple submissions
-    const submitButton = e.target.querySelector('button[type="submit"]');
+    submitButton.innerHTML = '<span class="loading-spinner"></span> Generating...';
     submitButton.disabled = true;
-    submitButton.innerText = 'Generating...';
 
     try {
+        const formData = getFormData();
+        validateFormData(formData);
+        
         const response = await fetch('/api/generate-doc', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, jira, inputMethod, githubFileUrl })
+            body: JSON.stringify(formData)
         });
 
         const result = await response.json();
-
-        if (result.documentation) {
-            // Increment generation count
-            generationCount++;
-
-            // Populate the modal panes
-            document.getElementById('markdownContent').innerText = result.documentation;
-            document.getElementById('renderedContent').innerHTML = marked.parse(result.documentation);
-
-            // Show the modal
-            $('#outputModal').modal('show');
-        } else if (result.error) {
-            alert('Error: ' + result.error);
-        } else {
-            alert('An unexpected error occurred.');
-        }
+        
+        if (result.error) throw new Error(result.error);
+        showResults(result.documentation);
+        trackUsage(user);
     } catch (error) {
-        console.error('Error:', error);
-        alert('Error generating documentation.');
+        showError(`🚨 Error: ${error.message}`);
     } finally {
-        // Re-enable the submit button
         submitButton.disabled = false;
-        submitButton.innerText = 'Generate';
+        submitButton.innerHTML = '<i class="fas fa-magic me-2"></i>Generate Docs';
     }
-});
-
-// Copy Markdown to Clipboard
-document.getElementById('copyMarkdownButton').addEventListener('click', function() {
-    const markdownText = document.getElementById('markdownContent').innerText;
-    navigator.clipboard.writeText(markdownText).then(function() {
-        // Show success message
-        document.getElementById('markdownStatus').style.display = 'inline';
-        setTimeout(() => {
-            document.getElementById('markdownStatus').style.display = 'none';
-        }, 2000);
-    }, function(err) {
-        console.error('Could not copy text: ', err);
-        alert('Failed to copy Markdown.');
-    });
-});
-
-// Copy Rendered HTML to Clipboard
-document.getElementById('copyRenderedButton').addEventListener('click', function() {
-    const renderedContent = document.getElementById('renderedContent').innerHTML;
-    // Create a temporary textarea to copy HTML
-    const tempTextarea = document.createElement('textarea');
-    tempTextarea.value = renderedContent;
-    document.body.appendChild(tempTextarea);
-    tempTextarea.select();
-    try {
-        document.execCommand('copy');
-        // Show success message
-        document.getElementById('renderedStatus').style.display = 'inline';
-        setTimeout(() => {
-            document.getElementById('renderedStatus').style.display = 'none';
-        }, 2000);
-    } catch (err) {
-        console.error('Could not copy text: ', err);
-        alert('Failed to copy rendered content.');
-    }
-    document.body.removeChild(tempTextarea);
-});
-
-// Close the modal and clear content
-document.getElementById('modalCloseButton').addEventListener('click', function() {
-    // Clear content if needed
-    document.getElementById('markdownContent').innerText = '';
-    document.getElementById('renderedContent').innerHTML = '';
-});
-
-// Initialize Authentication and Feedback when the page loads
-window.onload = function() {
-    setupAuthAndFeedback();
-    setupInputMethodToggle();
 };
+
+// Helper Functions
+const getFormData = () => ({
+    code: document.getElementById('code').value,
+    jira: document.getElementById('jira').value,
+    githubFileUrl: document.getElementById('githubFileUrl').value,
+    inputMethod: document.querySelector('input[name="inputMethod"]:checked').value
+});
+
+const validateFormData = ({ code, githubFileUrl, inputMethod }) => {
+    if (inputMethod === 'codeSnippet' && !code.trim()) {
+        throw new Error('Please enter some code! 🧑💻');
+    }
+    if (inputMethod === 'githubFile' && !githubFileUrl) {
+        throw new Error('GitHub URL required! 🌐');
+    }
+};
+
+const showResults = (documentation) => {
+    document.getElementById('markdownContent').textContent = documentation;
+    document.getElementById('renderedContent').innerHTML = marked.parse(documentation);
+    $('#outputModal').modal('show');
+};
+
+const trackUsage = (user) => {
+    const count = parseInt(localStorage.getItem('generationCount') || 0;
+    localStorage.setItem('generationCount', count + 1);
+    
+    if (user) {
+        firebase.firestore().collection('usage').doc(user.uid).set({
+            lastUsed: firebase.firestore.FieldValue.serverTimestamp(),
+            count: count + 1
+        }, { merge: true });
+    }
+};
+
+// UI Effects & Interactions
+const setupCopyButtons = () => {
+    const copyHandler = (content, statusElement) => {
+        navigator.clipboard.writeText(content).then(() => {
+            statusElement.style.display = 'inline';
+            setTimeout(() => statusElement.style.display = 'none', 2000);
+        }).catch(() => showError('📋 Clipboard access denied!'));
+    };
+
+    document.getElementById('copyMarkdownButton').addEventListener('click', () => {
+        copyHandler(document.getElementById('markdownContent').textContent, 
+                   document.getElementById('markdownStatus'));
+    });
+
+    document.getElementById('copyRenderedButton').addEventListener('click', () => {
+        copyHandler(document.getElementById('renderedContent').innerHTML, 
+                   document.getElementById('renderedStatus'));
+    });
+};
+
+const setupFeedback = () => {
+    const feedbackForm = document.getElementById('feedback-form');
+    feedbackForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = firebase.auth().currentUser;
+        const feedback = document.getElementById('feedback-text').value.trim();
+
+        if (!feedback) return showError('📝 Please write some feedback first!');
+        
+        try {
+            await firebase.firestore().collection('feedback').add({
+                uid: user?.uid || 'anonymous',
+                feedback,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            $('#feedbackModal').modal('hide');
+            showSuccess('💖 Thanks for your feedback!');
+            feedbackForm.reset();
+        } catch (error) {
+            showError(`📮 Failed to send feedback: ${error.message}`);
+        }
+    });
+};
+
+// Error Handling
+const showError = (message) => {
+    const errorHtml = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('afterbegin', errorHtml);
+};
+
+const showSuccess = (message) => {
+    const successHtml = `
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('afterbegin', successHtml);
+};
+
+// Input Field Toggle
+const toggleInputFields = () => {
+    const isCodeSnippet = document.getElementById('codeSnippetOption').checked;
+    document.getElementById('codeSnippetInput').style.display = isCodeSnippet ? 'block' : 'none';
+    document.getElementById('githubFileInput').style.display = isCodeSnippet ? 'none' : 'block';
+    document.getElementById('contextLabel').innerHTML = isCodeSnippet 
+        ? '<i class="fas fa-comment-dots me-2"></i>Code Context (optional):' 
+        : '<i class="fas fa-info-circle me-2"></i>File Context (optional):';
+};
+
+// Keyboard Shortcuts
+const setupKeyboardShortcuts = () => {
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            document.getElementById('doc-form').requestSubmit();
+        }
+    });
+};
+
+// Initialization
+window.addEventListener('DOMContentLoaded', () => {
+    initAuth();
+    setupForm();
+    setupUI();
+});
