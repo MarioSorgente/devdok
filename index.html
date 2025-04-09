@@ -1,57 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Keep all head elements same as previous optimized version -->
     <meta charset="UTF-8">
     <title>DevDok - AI-Powered Code Explainer</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <meta name="description" content="Understand any code instantly with AI explanations. Perfect for developers and coding bootcamp students!" />
-    <meta property="og:title" content="DevDok - Code Explainer for Developers" />
-    <meta property="og:description" content="Get instant AI-powered explanations for any code snippet or GitHub file." />
-    <meta property="og:image" content="favicon.ico" />
-    <meta property="og:url" content="https://www.devdok.com/" />
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <meta name="description" content="Understand any code instantly with AI explanations.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Keep Google Analytics and cookie styles same -->
+
+    <style>
+        /* Override dark mode styles */
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        #cookie-banner {
+            background-color: #ffffff;
+            border-top: 2px solid #e9ecef;
+            color: #495057;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            padding: 12px 30px;
+            border-radius: 8px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .feature-list li {
+            margin: 15px 0;
+            padding: 12px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+    </style>
 </head>
 
-<body class="bg-code">
-    <!-- Modified Main Container -->
-    <div class="container mt-5 index-container">
-        <div class="left">
-            <h1 class="text-gradient mb-4">AI writes the code, you understand it</h1>
-            <p class="lead text-light mb-4">
-                Paste any GitHub file or code snippet.<br>
-                Understand what's really going on with DevDok
-            </p>
-            <button onclick="window.location.href='generator.html'" 
-                    class="btn btn-success btn-lg mt-3">
-                <i class="fas fa-rocket me-2"></i>Get Started
+<body>
+    <!-- Main Container -->
+    <div class="container mt-5">
+        <div class="row align-items-center">
+            <div class="col-md-6 order-2 order-md-1 text-center text-md-left">
+                <h1 class="display-4 mb-4" style="color: #2d3436; font-weight: 600;">
+                    AI writes the code,<br>you understand it
+                </h1>
+                <p class="lead mb-4 text-muted">
+                    Paste any GitHub file or code snippet.<br>
+                    Understand what's really going on with DevDok
+                </p>
+                <button onclick="window.location.href='generator.html'" 
+                        class="btn btn-success btn-lg">
+                    <i class="fas fa-play mr-2"></i>Get Started
+                </button>
+            </div>
+            
+            <div class="col-md-6 order-1 order-md-2 mb-5 mb-md-0">
+                <img src="devdok.png" alt="Code explanation illustration" 
+                     class="img-fluid rounded-lg shadow-sm">
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Banner -->
+    <div id="cookie-banner" class="fixed-bottom">
+        <div class="container py-3 d-flex justify-content-between align-items-center">
+            <span class="text-secondary">
+                We use cookies to enhance your experience. 
+                <a href="privacy.html" class="text-primary">Learn more</a>
+            </span>
+            <button id="accept-cookies" class="btn btn-primary btn-sm">
+                Accept
             </button>
         </div>
-        <div class="right">
-            <img src="devdok.png" alt="Code explanation illustration" 
-                 class="img-fluid code-illustration">
-        </div>
     </div>
 
-    <!-- Keep cookie banner and footer same as optimized version -->
-    <div id="cookie-banner">
-        <span>
-            We use cookies to enhance your experience. 
-            <a href="privacy.html" class="text-success">Learn more</a>
-        </span>
-        <button id="accept-cookies" class="ml-3">
-            <i class="fas fa-check me-2"></i>Accept
-        </button>
-    </div>
-
-    <footer class="mt-5">
+    <!-- Footer -->
+    <footer class="mt-5 py-4 border-top">
         <div class="container text-center">
-            <div class="mb-3">
-                <a href="privacy.html" class="text-success small">Privacy Policy</a>
+            <div class="mb-2">
+                <a href="privacy.html" class="text-secondary">Privacy Policy</a>
             </div>
             <div class="text-muted small">
                 &copy; 2025 DevDok · Made with <i class="fas fa-heart text-danger"></i> for developers
@@ -59,6 +102,22 @@
         </div>
     </footer>
 
-    <!-- Keep scripts same -->
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('cookiesAccepted')) {
+                document.getElementById('cookie-banner').style.display = 'flex';
+            }
+
+            document.getElementById('accept-cookies').addEventListener('click', function() {
+                localStorage.setItem('cookiesAccepted', 'true');
+                document.getElementById('cookie-banner').style.display = 'none';
+            });
+        });
+    </script>
 </body>
 </html>
