@@ -40,7 +40,7 @@ module.exports = async function (req, res) {
   }
 
   const prompt = `
-You are a developer tasked with generating comprehensive documentation for the following code snippet. Use the provided code and context to create clear Markdown documentation with a title, summary, and details about key components.
+You are a senior developer tasked with generating comprehensive documentation for the following code snippet you nedd to explain to a junior developer or someone who is learning to code. Use the provided code and context to create clear Markdown documentation with a title, summary, and details about key components.
 
 **Code Snippet:**
 \`\`\`
