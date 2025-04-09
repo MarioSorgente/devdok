@@ -6,11 +6,11 @@ const openai_api_key = process.env.OPENAI_API_KEY;
 const github_access_token = process.env.GITHUB_ACCESS_TOKEN; // From Vercel environment variables
 
 module.exports = async function (req, res) {
-  // Optional: Allow CORS (adjust based on your deployment needs)
+  // Optional: Allow CORS if needed
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   if (req.method !== 'POST') {
-    res.status(405).send({ message: 'Only POST requests allowed' });
+    res.status(405).json({ message: 'Only POST requests allowed' });
     return;
   }
 
@@ -32,7 +32,7 @@ module.exports = async function (req, res) {
     return;
   }
 
-  // Ensure code is within acceptable length limits (adjust based on token limits)
+  // Enforce maximum code length (adjust as needed for token limits)
   const maxCodeLength = 15000;
   if (code.length > maxCodeLength) {
     res.status(400).json({ error: 'The selected code is too large to process. Please select a smaller file or code snippet.' });
@@ -40,7 +40,7 @@ module.exports = async function (req, res) {
   }
 
   const prompt = `
-You are a developer tasked with generating comprehensive documentation for the following code snippet.Explain as it was for a junior developer who is learning to code.  Use the provided code and context to create clear Markdown documentation with a title, summary, and details about key components.
+You are a developer tasked with generating comprehensive documentation for the following code snippet. Use the provided code and context to create clear Markdown documentation with a title, summary, and details about key components.
 
 **Code Snippet:**
 \`\`\`
@@ -87,7 +87,7 @@ Generate the documentation below:
 
 // Function to fetch code from a GitHub file URL
 async function fetchCodeFromGitHubFile(fileUrl) {
-  // Convert GitHub file URL to the raw file URL
+  // Convert the GitHub URL to the raw file URL
   const rawUrl = fileUrl
     .replace('github.com', 'raw.githubusercontent.com')
     .replace('/blob/', '/');
@@ -103,7 +103,7 @@ async function fetchCodeFromGitHubFile(fileUrl) {
   }
   const code = await response.text();
 
-  // Check file size (limit of 50KB)
+  // Ensure file size is within limits (50KB)
   const fileSizeInBytes = Buffer.byteLength(code, 'utf8');
   const maxFileSize = 50 * 1024; // 50KB
   if (fileSizeInBytes > maxFileSize) {
