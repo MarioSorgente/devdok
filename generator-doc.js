@@ -11,12 +11,12 @@ const form = document.getElementById('doc-form');
 const codeSnippetOption = document.getElementById('codeSnippetOption');
 const githubFileOption = document.getElementById('githubFileOption');
 
-// Helper function: Show error messages (can be enhanced as needed)
+// Helper: Show error messages (this can be replaced with a more robust notification system)
 function showError(message) {
     alert(message);
 }
 
-// Helper function: Copy Markdown content to clipboard
+// Helper: Copy Markdown content to clipboard
 function copyMarkdown() {
     const markdownText = document.getElementById('markdownContent').textContent;
     navigator.clipboard.writeText(markdownText).then(() => {
@@ -26,7 +26,7 @@ function copyMarkdown() {
     });
 }
 
-// Helper function: Copy Rendered content to clipboard
+// Helper: Copy Rendered content to clipboard
 function copyRendered() {
     const renderedText = document.getElementById('renderedContent').innerText;
     navigator.clipboard.writeText(renderedText).then(() => {
@@ -36,7 +36,7 @@ function copyRendered() {
     });
 }
 
-// Helper function: Open Feedback Modal
+// Helper: Open Feedback Modal
 function handleFeedback() {
     $('#feedbackModal').modal('show');
 }
@@ -83,13 +83,13 @@ async function handleSubmit(e) {
     const user = auth.currentUser;
 
     try {
-        // Require login if the user has already generated once
+        // Require login if user already generated documentation once
         if (!user && (parseInt(localStorage.getItem('generationCount') || '0') >= 1)) {
             showError('🔒 Please sign in to continue');
             return;
         }
 
-        // Get form data
+        // Build form data
         const formData = {
             code: document.getElementById('code').value,
             jira: document.getElementById('jira').value,
@@ -105,7 +105,7 @@ async function handleSubmit(e) {
             throw new Error('GitHub URL required! 🌐');
         }
 
-        // Disable the submit button with a loading indicator
+        // Disable button and show a loading indicator
         submitButton.innerHTML = '<div class="loading-spinner"></div> Generating...';
         submitButton.disabled = true;
 
@@ -119,12 +119,12 @@ async function handleSubmit(e) {
         const result = await response.json();
         if (result.error) throw new Error(result.error);
         
-        // Display the generated documentation (both Markdown and rendered preview)
+        // Display generated documentation (Markdown and rendered preview)
         document.getElementById('markdownContent').textContent = result.documentation;
         document.getElementById('renderedContent').innerHTML = marked.parse(result.documentation);
         $('#outputModal').modal('show');
         
-        // Usage tracking: update local storage and Firebase (if logged in)
+        // Track usage in local storage and update Firebase (if logged in)
         localStorage.setItem('generationCount', parseInt(localStorage.getItem('generationCount') || '0') + 1);
         if (user) {
             db.collection('usage').doc(user.uid).update({
@@ -144,7 +144,7 @@ async function handleSubmit(e) {
 function initApp() {
     initAuth();
     setupEventListeners();
-    toggleInputFields(); // Set the initial state
+    toggleInputFields(); // Set initial input method state
 }
 
 // Attach all event listeners
@@ -153,7 +153,7 @@ function setupEventListeners() {
     githubFileOption.addEventListener('change', toggleInputFields);
     form.addEventListener('submit', handleSubmit);
     
-    // Event listeners for copy buttons
+    // Copy button listeners
     document.getElementById('copyMarkdownButton').addEventListener('click', copyMarkdown);
     document.getElementById('copyRenderedButton').addEventListener('click', copyRendered);
     
@@ -161,5 +161,5 @@ function setupEventListeners() {
     document.getElementById('feedback-button').addEventListener('click', handleFeedback);
 }
 
-// Start the application once the DOM is fully loaded
+// Start app when DOM is ready
 window.addEventListener('DOMContentLoaded', initApp);
