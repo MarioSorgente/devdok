@@ -5,11 +5,6 @@
     <title>DevDok - Code Documentation Generator</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     
-    <!-- Meta Tags -->
-    <meta name="description" content="Generate instant documentation for your code snippets and GitHub files">
-    <meta property="og:title" content="DevDok - Code Documentation Generator">
-    <meta property="og:description" content="Automatically generate documentation for your code">
-    
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -66,19 +61,21 @@
                     <div class="form-group">
                         <label class="font-weight-600 mb-3">Input Method:</label>
                         <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
-                            <label class="btn btn-light active" style="border: 1px solid #dee2e6;">
+                            <label class="btn btn-outline-primary active" id="codeSnippetLabel">
                                 <input type="radio" name="inputMethod" id="codeSnippetOption" 
-                                      value="codeSnippet" checked> Code Snippet
+                                      value="codeSnippet" checked> 
+                                <i class="fas fa-code mr-2"></i>Code Snippet
                             </label>
-                            <label class="btn btn-light" style="border: 1px solid #dee2e6;">
+                            <label class="btn btn-outline-primary" id="githubFileLabel">
                                 <input type="radio" name="inputMethod" id="githubFileOption" 
-                                      value="githubFile"> GitHub File
+                                      value="githubFile"> 
+                                <i class="fab fa-github mr-2"></i>GitHub File
                             </label>
                         </div>
                     </div>
 
                     <!-- Code Snippet Input -->
-                    <div id="codeSnippetInput">
+                    <div id="codeSnippetInput" class="code-input-section">
                         <div class="form-group">
                             <label class="font-weight-600">Your Code</label>
                             <textarea class="form-control code-input" id="code" rows="8" 
@@ -87,7 +84,7 @@
                     </div>
 
                     <!-- GitHub File Input -->
-                    <div id="githubFileInput" class="d-none">
+                    <div id="githubFileInput" class="github-input-section d-none">
                         <div class="form-group">
                             <label class="font-weight-600">GitHub File URL</label>
                             <input type="url" class="form-control" id="githubFileUrl" 
@@ -196,19 +193,6 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-       $(document).ready(function() {
-           $('input[name="inputMethod"]').on('change', function() {
-               if ($(this).val() === 'githubFile') {
-                   $('#githubFileInput').removeClass('d-none');
-                   $('#codeSnippetInput').addClass('d-none');
-               } else {
-                   $('#codeSnippetInput').removeClass('d-none');
-                   $('#githubFileInput').addClass('d-none');
-               }
-           });
-       });
-    </script>
     <script src="generator-doc.js"></script>
 </body>
 </html>
