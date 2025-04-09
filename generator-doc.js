@@ -19,21 +19,17 @@ function showError(message) {
 // Helper: Copy Markdown content to clipboard
 function copyMarkdown() {
     const markdownText = document.getElementById('markdownContent').textContent;
-    navigator.clipboard.writeText(markdownText).then(() => {
-        alert("Markdown content copied to clipboard!");
-    }).catch(err => {
-        alert("Error copying Markdown content: " + err);
-    });
+    navigator.clipboard.writeText(markdownText)
+        .then(() => alert("Markdown content copied to clipboard!"))
+        .catch(err => alert("Error copying Markdown content: " + err));
 }
 
 // Helper: Copy Rendered content to clipboard
 function copyRendered() {
     const renderedText = document.getElementById('renderedContent').innerText;
-    navigator.clipboard.writeText(renderedText).then(() => {
-        alert("Rendered content copied to clipboard!");
-    }).catch(err => {
-        alert("Error copying rendered content: " + err);
-    });
+    navigator.clipboard.writeText(renderedText)
+        .then(() => alert("Rendered content copied to clipboard!"))
+        .catch(err => alert("Error copying rendered content: " + err));
 }
 
 // Helper: Open Feedback Modal
@@ -66,24 +62,20 @@ function initAuth() {
 // Toggle Input Fields: switches between code snippet and GitHub file URL inputs
 function toggleInputFields() {
     const isCodeSnippet = codeSnippetOption.checked;
-    
-    // Toggle visibility of the corresponding sections
     document.getElementById('codeSnippetInput').classList.toggle('d-none', !isCodeSnippet);
     document.getElementById('githubFileInput').classList.toggle('d-none', isCodeSnippet);
-    
-    // Update the toggle button active states
     document.getElementById('codeSnippetLabel').classList.toggle('active', isCodeSnippet);
     document.getElementById('githubFileLabel').classList.toggle('active', !isCodeSnippet);
 }
 
-// Form Submission: Validate inputs, make the API call, and display the documentation
+// Form Submission: Validate inputs, call API, and display documentation
 async function handleSubmit(e) {
     e.preventDefault();
     const submitButton = form.querySelector('button[type="submit"]');
     const user = auth.currentUser;
 
     try {
-        // Require login if user already generated documentation once
+        // Require login if already generated documentation once
         if (!user && (parseInt(localStorage.getItem('generationCount') || '0') >= 1)) {
             showError('🔒 Please sign in to continue');
             return;
@@ -97,7 +89,7 @@ async function handleSubmit(e) {
             inputMethod: document.querySelector('input[name="inputMethod"]:checked').value
         };
 
-        // Validate inputs for each method
+        // Validate fields based on selected input method
         if (formData.inputMethod === 'codeSnippet' && !formData.code.trim()) {
             throw new Error('Please enter code! 🧑💻');
         }
@@ -105,7 +97,7 @@ async function handleSubmit(e) {
             throw new Error('GitHub URL required! 🌐');
         }
 
-        // Disable button and show a loading indicator
+        // Disable button and show loading indicator
         submitButton.innerHTML = '<div class="loading-spinner"></div> Generating...';
         submitButton.disabled = true;
 
@@ -116,14 +108,22 @@ async function handleSubmit(e) {
             body: JSON.stringify(formData)
         });
 
-        const result = await response.json();
+        let result;
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            result = await response.json();
+        } else {
+            const text = await response.text();
+            throw new Error("Non-JSON response: " + text);
+        }
+
         if (result.error) throw new Error(result.error);
-        
+
         // Display generated documentation (Markdown and rendered preview)
         document.getElementById('markdownContent').textContent = result.documentation;
         document.getElementById('renderedContent').innerHTML = marked.parse(result.documentation);
         $('#outputModal').modal('show');
-        
+
         // Track usage in local storage and update Firebase (if logged in)
         localStorage.setItem('generationCount', parseInt(localStorage.getItem('generationCount') || '0') + 1);
         if (user) {
@@ -131,7 +131,6 @@ async function handleSubmit(e) {
                 count: firebase.firestore.FieldValue.increment(1)
             });
         }
-
     } catch (error) {
         showError(`🚨 Error: ${error.message}`);
     } finally {
@@ -144,22 +143,25 @@ async function handleSubmit(e) {
 function initApp() {
     initAuth();
     setupEventListeners();
-    toggleInputFields(); // Set initial input method state
+    toggleInputFields(); // Set initial state based on default selection
 }
 
-// Attach all event listeners
+// Attach event listeners
 function setupEventListeners() {
-    codeSnippetOption.addEventListener('change', toggleInputFields);
-    githubFileOption.addEventListener('change', toggleInputFields);
+    // Listen for both "change" and "click" events to ensure toggling works
+    document.querySelectorAll('input[name="inputMethod"]').forEach(input => {
+        input.addEventListener('change', toggleInputFields);
+        input.addEventListener('click', toggleInputFields);
+    });
     form.addEventListener('submit', handleSubmit);
     
-    // Copy button listeners
+    // Copy buttons
     document.getElementById('copyMarkdownButton').addEventListener('click', copyMarkdown);
     document.getElementById('copyRenderedButton').addEventListener('click', copyRendered);
     
-    // Feedback button listener
+    // Feedback
     document.getElementById('feedback-button').addEventListener('click', handleFeedback);
 }
 
-// Start app when DOM is ready
+// Start the application when the DOM is ready
 window.addEventListener('DOMContentLoaded', initApp);
