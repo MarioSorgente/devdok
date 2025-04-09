@@ -6,6 +6,9 @@ const openai_api_key = process.env.OPENAI_API_KEY;
 const github_access_token = process.env.GITHUB_ACCESS_TOKEN; // From Vercel environment variables
 
 module.exports = async function (req, res) {
+  // Optional: Allow CORS (adjust based on your deployment needs)
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
   if (req.method !== 'POST') {
     res.status(405).send({ message: 'Only POST requests allowed' });
     return;
@@ -24,50 +27,30 @@ module.exports = async function (req, res) {
     }
   }
 
-  // Check if the code exceeds token limits
-  const maxCodeLength = 15000; // Adjust based on OpenAI API token limits
+  if (!code || typeof code !== 'string') {
+    res.status(400).json({ error: 'No valid code provided.' });
+    return;
+  }
+
+  // Ensure code is within acceptable length limits (adjust based on token limits)
+  const maxCodeLength = 15000;
   if (code.length > maxCodeLength) {
     res.status(400).json({ error: 'The selected code is too large to process. Please select a smaller file or code snippet.' });
     return;
   }
 
   const prompt = `
-You are a developer reviewing the following code snippet or file. Based on the code and any provided context, generate documentation in **Markdown format compatible with Notion**.
-
-**Instructions:**
-- **Title:** Provide a clear and descriptive title.
-- **Summary:** Write a brief overview of what the code does.
-- **Key Components:**
-  - Explain main functions, classes, or methods and everything a developer of Google would document, without making unsupported assumptions.
-- **Formatting:**
-  - Use clear headings and bullet points.
-  - Include code snippets if they aid understanding.
--**Note:** 
-  - If the code lacks comments or is part of a larger project, please highlight the parts that need additional context or explanations to improve the accuracy of the documentation.
-
-
-**Code Snippet:**
-\`\`\`
-function calculateSum(a, b) {
-  return a + b;
-}
-\`\`\`
-
-**Context:**
-This function is part of a utility library for mathematical operations.
-
-Provide the documentation below:
-
+You are a developer tasked with generating comprehensive documentation for the following code snippet.Explain as it was for a junior developer who is learning to code.  Use the provided code and context to create clear Markdown documentation with a title, summary, and details about key components.
 
 **Code Snippet:**
 \`\`\`
 ${code}
 \`\`\`
 
-**Context Details:**
+**Additional Context:**
 ${jira}
 
-Provide the documentation below:
+Generate the documentation below:
 `;
 
   try {
@@ -83,8 +66,7 @@ Provide the documentation below:
           { role: 'system', content: 'You are a helpful assistant for generating code documentation.' },
           { role: 'user', content: prompt }
         ],
-        // max_tokens: 4000,
-        temperature: 0.7,
+        temperature: 0.7
       })
     });
 
@@ -105,40 +87,28 @@ Provide the documentation below:
 
 // Function to fetch code from a GitHub file URL
 async function fetchCodeFromGitHubFile(fileUrl) {
-  // Convert the GitHub file URL to a raw file URL
+  // Convert GitHub file URL to the raw file URL
   const rawUrl = fileUrl
     .replace('github.com', 'raw.githubusercontent.com')
     .replace('/blob/', '/');
 
-  // Headers for the request
   const headers = {};
-
-  // Include personal access token if available
   if (github_access_token) {
     headers['Authorization'] = `token ${github_access_token}`;
   }
 
-  try {
-    const response = await fetch(rawUrl, {
-      headers: headers
-    });
-
-    if (!response.ok) {
-      throw new Error(`GitHub raw content error: ${response.statusText}`);
-    }
-
-    const code = await response.text();
-
-    // Check file size (assuming UTF-8 encoding)
-    const fileSizeInBytes = Buffer.byteLength(code, 'utf8');
-    const maxFileSize = 50 * 1024; // 50KB
-
-    if (fileSizeInBytes > maxFileSize) {
-      throw new Error('File size exceeds 50KB limit.');
-    }
-
-    return code;
-  } catch (error) {
-    throw error;
+  const response = await fetch(rawUrl, { headers });
+  if (!response.ok) {
+    throw new Error(`GitHub raw content error: ${response.statusText}`);
   }
+  const code = await response.text();
+
+  // Check file size (limit of 50KB)
+  const fileSizeInBytes = Buffer.byteLength(code, 'utf8');
+  const maxFileSize = 50 * 1024; // 50KB
+  if (fileSizeInBytes > maxFileSize) {
+    throw new Error('File size exceeds 50KB limit.');
+  }
+
+  return code;
 }
