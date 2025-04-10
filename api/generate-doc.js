@@ -33,14 +33,14 @@ module.exports = async function (req, res) {
   }
 
   // Enforce maximum code length (adjust as needed for token limits)
-  const maxCodeLength = 15000;
+  const maxCodeLength = 150000;
   if (code.length > maxCodeLength) {
     res.status(400).json({ error: 'The selected code is too large to process. Please select a smaller file or code snippet.' });
     return;
   }
 
   const prompt = `
-You are a senior developer tasked with generating comprehensive documentation for the following code snippet you nedd to explain to a junior developer or someone who is learning to code. Use the provided code and context to create clear Markdown documentation with a title, summary, and details about key components.
+You are a senior developer tasked with generating comprehensive documentation for the following code snippet you need to explain to a junior developer or someone who is learning to code. Use the provided code and context to create clear Markdown documentation with a title, summary, and details about key components.
 
 **Code Snippet:**
 \`\`\`
