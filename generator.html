@@ -3,23 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>DevDok - Code Documentation Generator</title>
-
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  
   <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-  <!-- Minimal Inline CSS -->
+  
+  <!-- Custom CSS -->
   <style>
     body {
       font-family: 'Inter', sans-serif;
       background-color: #f8f9fa;
       color: #2d3436;
     }
-    .navbar-logo { height: 32px; }
-    .d-none { display: none !important; }
+    .navbar-logo {
+      height: 32px;
+    }
+    .d-none {
+      display: none !important;
+    }
     .loading-spinner {
       display: inline-block;
       width: 1.25rem;
@@ -39,234 +44,278 @@
       border-color: #28a745 !important;
       color: #fff !important;
     }
+    #githubFileInput {
+      transition: all 0.3s ease;
+    }
+    #codeSnippetInput {
+      transition: all 0.3s ease;
+    }
   </style>
 </head>
 <body>
-  <!-- Navbar (static, optional) -->
+  <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
-      <a class="navbar-brand" href="#">
+      <a class="navbar-brand" href="index.html">
         <img src="duck.png" alt="DevDok Logo" class="navbar-logo">
         <span class="ml-2 font-weight-bold text-primary">DevDok</span>
       </a>
+      <div class="d-flex align-items-center">
+        <span class="text-muted mr-3" id="user-greeting"></span>
+        <button id="login-button" class="btn btn-outline-primary">Login with Google</button>
+        <button id="logout-button" class="btn btn-outline-danger ml-2" style="display: none;">Logout</button>
+      </div>
     </div>
   </nav>
-
+  
   <!-- Main Content -->
-  <div class="container mt-4">
+  <div class="container mt-5">
     <div class="card shadow-sm border-0">
       <div class="card-body p-4">
         <h2 class="mb-4 text-dark">Code Documentation Generator</h2>
-
+        
         <form id="doc-form">
-          <!-- Input Method -->
+          <!-- Input Method Selector -->
           <div class="form-group">
-            <label class="font-weight-bold">Input Method</label>
+            <label class="font-weight-600 mb-3">Input Method:</label>
             <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
               <label class="btn btn-outline-primary active" id="codeSnippetLabel">
                 <input type="radio" name="inputMethod" id="codeSnippetOption" value="codeSnippet" checked>
-                <i class="fas fa-code mr-1"></i>Code Snippet
+                <i class="fas fa-code mr-2"></i>Code Snippet
               </label>
               <label class="btn btn-outline-primary" id="githubFileLabel">
                 <input type="radio" name="inputMethod" id="githubFileOption" value="githubFile">
-                <i class="fab fa-github mr-1"></i>GitHub File
+                <i class="fab fa-github mr-2"></i>GitHub File
               </label>
             </div>
           </div>
-
-          <!-- Code Snippet Container -->
+  
+          <!-- Code Snippet Input -->
           <div id="codeSnippetInput">
             <div class="form-group">
-              <label class="font-weight-bold">Your Code</label>
+              <label class="font-weight-600">Your Code</label>
               <textarea class="form-control" id="code" rows="8" placeholder="Paste your code here..." required></textarea>
             </div>
           </div>
-
-          <!-- GitHub File Container -->
+  
+          <!-- GitHub File Input -->
           <div id="githubFileInput" class="d-none">
             <div class="form-group">
-              <label class="font-weight-bold">GitHub File URL</label>
+              <label class="font-weight-600">GitHub File URL</label>
               <input type="url" class="form-control" id="githubFileUrl" placeholder="https://github.com/username/repo/blob/main/file.js">
-              <small class="form-text text-muted">Ensure file size is under 50KB</small>
+              <small class="form-text text-muted mt-2">Ensure file size is under 50KB</small>
             </div>
           </div>
-
-          <!-- Additional Context -->
-          <div class="form-group mt-3">
-            <label class="font-weight-bold">Additional Context</label>
-            <textarea class="form-control" id="jira" rows="3" placeholder="Any special instructions here..."></textarea>
+  
+          <!-- Additional Context Input -->
+          <div class="form-group mt-4">
+            <label class="font-weight-600">Additional Context</label>
+            <textarea class="form-control" id="jira" rows="3" placeholder="Add any special instructions..."></textarea>
           </div>
-
-          <!-- Submit Button -->
-          <button type="submit" class="btn btn-success btn-block mt-4">
-            <i class="fas fa-magic mr-1"></i>Generate Documentation
+  
+          <button type="submit" class="btn btn-success btn-block mt-4 py-3">
+            <i class="fas fa-magic mr-2"></i>Generate Documentation
           </button>
         </form>
       </div>
     </div>
   </div>
-
+  
   <!-- Documentation Modal -->
   <div class="modal fade" id="outputModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header bg-light">
-          <h5 class="modal-title">Generated Documentation</h5>
-          <button type="button" class="close" data-dismiss="modal">
-            <span>&times;</span>
-          </button>
+          <h5 class="modal-title font-weight-600">Generated Documentation</h5>
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
         </div>
         <div class="modal-body">
           <div class="row">
             <!-- Markdown Column -->
-            <div class="col-md-6 mb-3">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6>Markdown Format</h6>
+            <div class="col-md-6 mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="font-weight-600">Markdown Format</h6>
                 <button class="btn btn-sm btn-outline-secondary" id="copyMarkdownButton">
-                  <i class="far fa-copy mr-1"></i>Copy
+                  <i class="far fa-copy mr-2"></i>Copy
                 </button>
               </div>
-              <pre id="markdownContent" class="bg-light p-3 border rounded" style="min-height:200px;"></pre>
+              <pre id="markdownContent" class="p-3 bg-light rounded border"></pre>
             </div>
             <!-- Rendered Preview Column -->
-            <div class="col-md-6 mb-3">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6>Rendered Preview</h6>
+            <div class="col-md-6 mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="font-weight-600">Preview</h6>
                 <button class="btn btn-sm btn-outline-secondary" id="copyRenderedButton">
-                  <i class="far fa-copy mr-1"></i>Copy
+                  <i class="far fa-copy mr-2"></i>Copy
                 </button>
               </div>
-              <div id="renderedContent" class="bg-white p-3 border rounded" style="min-height:200px;"></div>
+              <div id="renderedContent" class="p-3 bg-white rounded border"></div>
             </div>
+          </div>
+          <div class="text-center mt-4">
+            <button class="btn btn-link text-primary" id="feedback-button">
+              <i class="far fa-comment-dots mr-2"></i>Send Feedback
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Dependencies -->
+  
+  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-  <!-- Inline Script -->
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  
   <script>
-    // Toggle logic: show Code snippet or GitHub File input
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYIv_q2cRlAro1rsnzcXutYxW_ginonIY",
+      authDomain: "devdok-5da05.firebaseapp.com",
+      projectId: "devdok-5da05",
+      storageBucket: "devdok-5da05.appspot.com",
+      messagingSenderId: "924117031294",
+      appId: "1:924117031294:web:af6ab6958815ba45517b2f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    
+    // Initialize Firebase Auth
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    
+    // Toggle between input methods
     function toggleInputFields() {
-      const codeSnippetInput = document.getElementById("codeSnippetInput");
-      const githubFileInput = document.getElementById("githubFileInput");
-      const codeSnippetChecked = document.getElementById("codeSnippetOption").checked;
-
-      if (codeSnippetChecked) {
-        codeSnippetInput.classList.remove("d-none");
-        githubFileInput.classList.add("d-none");
-      } else {
-        githubFileInput.classList.remove("d-none");
-        codeSnippetInput.classList.add("d-none");
-      }
+      const isCodeSnippet = document.getElementById('codeSnippetOption').checked;
+      document.getElementById('codeSnippetInput').style.display = isCodeSnippet ? 'block' : 'none';
+      document.getElementById('githubFileInput').style.display = isCodeSnippet ? 'none' : 'block';
+      
+      // Update button active states
+      document.getElementById('codeSnippetLabel').classList.toggle('active', isCodeSnippet);
+      document.getElementById('githubFileLabel').classList.toggle('active', !isCodeSnippet);
     }
-
-    // Show an error alert
-    function showError(message) {
-      alert(message);
-    }
-
-    // Copy the raw Markdown text
-    function copyMarkdown() {
-      const markdownText = document.getElementById('markdownContent').textContent;
-      navigator.clipboard.writeText(markdownText).then(() => {
-        alert("Markdown content copied!");
-      }).catch(err => {
-        alert("Error copying: " + err);
-      });
-    }
-
-    // Copy the rendered text
-    function copyRendered() {
-      const renderedText = document.getElementById('renderedContent').innerText;
-      navigator.clipboard.writeText(renderedText).then(() => {
-        alert("Rendered content copied!");
-      }).catch(err => {
-        alert("Error copying rendered content: " + err);
-      });
-    }
-
-    // Handle form submission: POST to /api/generate-doc
+    
+    // Handle form submission
     async function handleSubmit(e) {
       e.preventDefault();
-      const submitBtn = e.target.querySelector('button[type="submit"]');
-
+      const submitButton = e.target.querySelector('button[type="submit"]');
+      const user = auth.currentUser;
+      
       try {
-        // Gather form data
-        const code = document.getElementById('code').value.trim();
-        const jira = document.getElementById('jira').value.trim();
-        const githubFileUrl = document.getElementById('githubFileUrl').value.trim();
-        const inputMethod = document.querySelector('input[name="inputMethod"]:checked').value;
-
-        // Validate
-        if (inputMethod === 'codeSnippet' && !code) {
-          throw new Error("Please enter code!");
+        // Get form data
+        const formData = {
+          code: document.getElementById('code').value,
+          jira: document.getElementById('jira').value,
+          githubFileUrl: document.getElementById('githubFileUrl').value,
+          inputMethod: document.querySelector('input[name="inputMethod"]:checked').value
+        };
+        
+        // Validate inputs
+        if (formData.inputMethod === 'codeSnippet' && !formData.code.trim()) {
+          throw new Error('Please enter some code!');
         }
-        if (inputMethod === 'githubFile' && !githubFileUrl) {
-          throw new Error("GitHub URL required!");
+        if (formData.inputMethod === 'githubFile' && !formData.githubFileUrl.trim()) {
+          throw new Error('Please enter a GitHub URL!');
         }
-
-        // Show spinner
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<div class="loading-spinner"></div> Generating...';
-
-        // Send request
+        
+        // Disable button during processing
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<div class="loading-spinner"></div> Generating...';
+        
+        // Call API endpoint
         const response = await fetch('/api/generate-doc', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code, jira, githubFileUrl, inputMethod })
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
         });
-
-        let result;
-        const contentType = response.headers.get('content-type') || '';
-        if (contentType.includes('application/json')) {
-          result = await response.json();
-        } else {
-          const text = await response.text();
-          throw new Error("Non-JSON response: " + text);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-
+        
+        const result = await response.json();
+        
         if (result.error) {
           throw new Error(result.error);
         }
-
-        // Display the returned docs
+        
+        // Display results
         document.getElementById('markdownContent').textContent = result.documentation;
         document.getElementById('renderedContent').innerHTML = marked.parse(result.documentation);
         $('#outputModal').modal('show');
-
-      } catch (err) {
-        showError("Error: " + err.message);
+        
+      } catch (error) {
+        alert(`Error: ${error.message}`);
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-magic mr-1"></i>Generate Documentation';
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fas fa-magic mr-2"></i> Generate Documentation';
       }
     }
-
-    // Set up event listeners
-    function initApp() {
-      // Toggle fields when changing radio
-      document.querySelectorAll('input[name="inputMethod"]').forEach(radio => {
-        radio.addEventListener('change', toggleInputFields);
+    
+    // Initialize authentication
+    function initAuth() {
+      auth.onAuthStateChanged(user => {
+        const loginBtn = document.getElementById('login-button');
+        const logoutBtn = document.getElementById('logout-button');
+        const greeting = document.getElementById('user-greeting');
+        
+        if (user) {
+          loginBtn.style.display = 'none';
+          logoutBtn.style.display = 'inline-block';
+          greeting.textContent = `Hi ${user.displayName.split(' ')[0]}!`;
+        } else {
+          loginBtn.style.display = 'inline-block';
+          logoutBtn.style.display = 'none';
+          greeting.textContent = '';
+        }
       });
-      // Kick off initial toggle
-      toggleInputFields();
-
-      // Form submit
-      document.getElementById('doc-form').addEventListener('submit', handleSubmit);
-
-      // Copy buttons
-      document.getElementById('copyMarkdownButton').addEventListener('click', copyMarkdown);
-      document.getElementById('copyRenderedButton').addEventListener('click', copyRendered);
+      
+      document.getElementById('login-button').addEventListener('click', () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+          .catch(error => alert(`Login failed: ${error.message}`));
+      });
+      
+      document.getElementById('logout-button').addEventListener('click', () => {
+        auth.signOut();
+      });
     }
-
-    document.addEventListener('DOMContentLoaded', initApp);
+    
+    // Setup event listeners
+    function setupEventListeners() {
+      document.getElementById('codeSnippetOption').addEventListener('change', toggleInputFields);
+      document.getElementById('githubFileOption').addEventListener('change', toggleInputFields);
+      document.getElementById('doc-form').addEventListener('submit', handleSubmit);
+      
+      // Copy buttons
+      document.getElementById('copyMarkdownButton').addEventListener('click', () => {
+        const text = document.getElementById('markdownContent').textContent;
+        navigator.clipboard.writeText(text)
+          .then(() => alert('Markdown copied to clipboard!'))
+          .catch(err => alert('Failed to copy: ' + err));
+      });
+      
+      document.getElementById('copyRenderedButton').addEventListener('click', () => {
+        const html = document.getElementById('renderedContent').innerHTML;
+        navigator.clipboard.writeText(html)
+          .then(() => alert('HTML copied to clipboard!'))
+          .catch(err => alert('Failed to copy: ' + err));
+      });
+    }
+    
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', () => {
+      initAuth();
+      setupEventListeners();
+      toggleInputFields(); // Set initial state
+    });
   </script>
 </body>
 </html>
