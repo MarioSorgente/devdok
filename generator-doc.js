@@ -10,8 +10,10 @@ const logoutButton = document.getElementById('logout-button');
 const form = document.getElementById('doc-form');
 const codeSnippetOption = document.getElementById('codeSnippetOption');
 const githubFileOption = document.getElementById('githubFileOption');
+const codeSnippetLabel = document.getElementById('codeSnippetLabel');
+const githubFileLabel = document.getElementById('githubFileLabel');
 
-// Helper: Show error messages (this can be replaced with a more robust notification system)
+// Helper: Show error messages (replace with a more robust system if desired)
 function showError(message) {
     alert(message);
 }
@@ -59,13 +61,22 @@ function initAuth() {
     logoutButton.addEventListener('click', () => auth.signOut());
 }
 
-// Toggle Input Fields: switches between code snippet and GitHub file URL inputs
+// Toggle Input Fields: When switching modes, update radio states and displayed fields
 function toggleInputFields() {
-    const isCodeSnippet = codeSnippetOption.checked;
-    document.getElementById('codeSnippetInput').classList.toggle('d-none', !isCodeSnippet);
-    document.getElementById('githubFileInput').classList.toggle('d-none', isCodeSnippet);
-    document.getElementById('codeSnippetLabel').classList.toggle('active', isCodeSnippet);
-    document.getElementById('githubFileLabel').classList.toggle('active', !isCodeSnippet);
+    // If GitHub file option is selected, clear the code snippet field to avoid confusion.
+    if (githubFileOption.checked) {
+        // Clear code snippet text (optional)
+        document.getElementById('code').value = '';
+        document.getElementById('codeSnippetInput').classList.add('d-none');
+        document.getElementById('githubFileInput').classList.remove('d-none');
+    } else {
+        document.getElementById('githubFileInput').classList.add('d-none');
+        document.getElementById('codeSnippetInput').classList.remove('d-none');
+    }
+    
+    // Update active classes on labels
+    codeSnippetLabel.classList.toggle('active', codeSnippetOption.checked);
+    githubFileLabel.classList.toggle('active', githubFileOption.checked);
 }
 
 // Form Submission: Validate inputs, call API, and display documentation
@@ -75,17 +86,11 @@ async function handleSubmit(e) {
     const user = auth.currentUser;
 
     try {
-        // Require login if already generated documentation once
-        if (!user && (parseInt(localStorage.getItem('generationCount') || '0') >= 1)) {
-            showError('🔒 Please sign in to continue');
-            return;
-        }
-
-        // Build form data
+        // Build form data, trim GitHub URL to remove extra whitespace
         const formData = {
             code: document.getElementById('code').value,
             jira: document.getElementById('jira').value,
-            githubFileUrl: document.getElementById('githubFileUrl').value,
+            githubFileUrl: document.getElementById('githubFileUrl').value.trim(),
             inputMethod: document.querySelector('input[name="inputMethod"]:checked').value
         };
 
@@ -93,11 +98,11 @@ async function handleSubmit(e) {
         if (formData.inputMethod === 'codeSnippet' && !formData.code.trim()) {
             throw new Error('Please enter code! 🧑💻');
         }
-        if (formData.inputMethod === 'githubFile' && !formData.githubFileUrl.trim()) {
+        if (formData.inputMethod === 'githubFile' && !formData.githubFileUrl) {
             throw new Error('GitHub URL required! 🌐');
         }
 
-        // Disable button and show loading indicator
+        // Disable button and show the loading spinner
         submitButton.innerHTML = '<div class="loading-spinner"></div> Generating...';
         submitButton.disabled = true;
 
@@ -119,7 +124,7 @@ async function handleSubmit(e) {
 
         if (result.error) throw new Error(result.error);
 
-        // Display generated documentation (Markdown and rendered preview)
+        // Display generated documentation (both Markdown and rendered preview)
         document.getElementById('markdownContent').textContent = result.documentation;
         document.getElementById('renderedContent').innerHTML = marked.parse(result.documentation);
         $('#outputModal').modal('show');
@@ -139,19 +144,11 @@ async function handleSubmit(e) {
     }
 }
 
-// Initialize App: sets up authentication and event listeners
-function initApp() {
-    initAuth();
-    setupEventListeners();
-    toggleInputFields(); // Set initial state based on default selection
-}
-
-// Attach event listeners
+// Attach event listeners for toggling and submission
 function setupEventListeners() {
-    // Listen for both "change" and "click" events to ensure toggling works
+    // Listen for "change" events on the radio inputs
     document.querySelectorAll('input[name="inputMethod"]').forEach(input => {
         input.addEventListener('change', toggleInputFields);
-        input.addEventListener('click', toggleInputFields);
     });
     form.addEventListener('submit', handleSubmit);
     
@@ -159,8 +156,15 @@ function setupEventListeners() {
     document.getElementById('copyMarkdownButton').addEventListener('click', copyMarkdown);
     document.getElementById('copyRenderedButton').addEventListener('click', copyRendered);
     
-    // Feedback
+    // Feedback button listener
     document.getElementById('feedback-button').addEventListener('click', handleFeedback);
+}
+
+// Initialize App: Set up authentication and event listeners
+function initApp() {
+    initAuth();
+    setupEventListeners();
+    toggleInputFields(); // Set initial state based on current selection
 }
 
 // Start the application when the DOM is ready
