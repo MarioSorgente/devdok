@@ -10,15 +10,11 @@ const logoutButton = document.getElementById('logout-button');
 const form = document.getElementById('doc-form');
 const codeSnippetOption = document.getElementById('codeSnippetOption');
 const githubFileOption = document.getElementById('githubFileOption');
-const codeSnippetLabel = document.getElementById('codeSnippetLabel');
-const githubFileLabel = document.getElementById('githubFileLabel');
 
-// Helper: Show error messages (replace with a more robust system if desired)
 function showError(message) {
     alert(message);
 }
 
-// Helper: Copy Markdown content to clipboard
 function copyMarkdown() {
     const markdownText = document.getElementById('markdownContent').textContent;
     navigator.clipboard.writeText(markdownText)
@@ -26,7 +22,6 @@ function copyMarkdown() {
         .catch(err => alert("Error copying Markdown content: " + err));
 }
 
-// Helper: Copy Rendered content to clipboard
 function copyRendered() {
     const renderedText = document.getElementById('renderedContent').innerText;
     navigator.clipboard.writeText(renderedText)
@@ -34,12 +29,10 @@ function copyRendered() {
         .catch(err => alert("Error copying rendered content: " + err));
 }
 
-// Helper: Open Feedback Modal
 function handleFeedback() {
     $('#feedbackModal').modal('show');
 }
 
-// Initialize Authentication
 function initAuth() {
     auth.onAuthStateChanged(user => {
         if (user) {
@@ -61,32 +54,28 @@ function initAuth() {
     logoutButton.addEventListener('click', () => auth.signOut());
 }
 
-// Toggle Input Fields: When switching modes, update radio states and displayed fields
 function toggleInputFields() {
-    // If GitHub file option is selected, clear the code snippet field to avoid confusion.
-    if (githubFileOption.checked) {
-        // Clear code snippet text (optional)
-        document.getElementById('code').value = '';
-        document.getElementById('codeSnippetInput').classList.add('d-none');
-        document.getElementById('githubFileInput').classList.remove('d-none');
-    } else {
-        document.getElementById('githubFileInput').classList.add('d-none');
-        document.getElementById('codeSnippetInput').classList.remove('d-none');
-    }
+    const codeSnippetInput = document.getElementById("codeSnippetInput");
+    const githubFileInput = document.getElementById("githubFileInput");
     
-    // Update active classes on labels
-    codeSnippetLabel.classList.toggle('active', codeSnippetOption.checked);
-    githubFileLabel.classList.toggle('active', githubFileOption.checked);
+    // Use the checked property of the radio inputs to show/hide corresponding sections
+    if (githubFileOption.checked) {
+        // Show the GitHub file URL input, hide code snippet input
+        githubFileInput.classList.remove("d-none");
+        codeSnippetInput.classList.add("d-none");
+    } else {
+        // Show the code snippet input, hide GitHub file URL input
+        codeSnippetInput.classList.remove("d-none");
+        githubFileInput.classList.add("d-none");
+    }
 }
 
-// Form Submission: Validate inputs, call API, and display documentation
 async function handleSubmit(e) {
     e.preventDefault();
     const submitButton = form.querySelector('button[type="submit"]');
     const user = auth.currentUser;
 
     try {
-        // Build form data, trim GitHub URL to remove extra whitespace
         const formData = {
             code: document.getElementById('code').value,
             jira: document.getElementById('jira').value,
@@ -94,7 +83,7 @@ async function handleSubmit(e) {
             inputMethod: document.querySelector('input[name="inputMethod"]:checked').value
         };
 
-        // Validate fields based on selected input method
+        // Validate according to the selected input method
         if (formData.inputMethod === 'codeSnippet' && !formData.code.trim()) {
             throw new Error('Please enter code! 🧑💻');
         }
@@ -102,11 +91,10 @@ async function handleSubmit(e) {
             throw new Error('GitHub URL required! 🌐');
         }
 
-        // Disable button and show the loading spinner
+        // Disable the submit button and show loading spinner
         submitButton.innerHTML = '<div class="loading-spinner"></div> Generating...';
         submitButton.disabled = true;
 
-        // API call to generate documentation
         const response = await fetch('/api/generate-doc', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -124,12 +112,11 @@ async function handleSubmit(e) {
 
         if (result.error) throw new Error(result.error);
 
-        // Display generated documentation (both Markdown and rendered preview)
+        // Show the generated documentation in Markdown and rendered preview
         document.getElementById('markdownContent').textContent = result.documentation;
         document.getElementById('renderedContent').innerHTML = marked.parse(result.documentation);
         $('#outputModal').modal('show');
 
-        // Track usage in local storage and update Firebase (if logged in)
         localStorage.setItem('generationCount', parseInt(localStorage.getItem('generationCount') || '0') + 1);
         if (user) {
             db.collection('usage').doc(user.uid).update({
@@ -144,28 +131,22 @@ async function handleSubmit(e) {
     }
 }
 
-// Attach event listeners for toggling and submission
 function setupEventListeners() {
-    // Listen for "change" events on the radio inputs
-    document.querySelectorAll('input[name="inputMethod"]').forEach(input => {
-        input.addEventListener('change', toggleInputFields);
+    // Listen for changes on the radio inputs
+    const radios = document.querySelectorAll('input[name="inputMethod"]');
+    radios.forEach(radio => {
+        radio.addEventListener('change', toggleInputFields);
     });
     form.addEventListener('submit', handleSubmit);
-    
-    // Copy buttons
     document.getElementById('copyMarkdownButton').addEventListener('click', copyMarkdown);
     document.getElementById('copyRenderedButton').addEventListener('click', copyRendered);
-    
-    // Feedback button listener
     document.getElementById('feedback-button').addEventListener('click', handleFeedback);
 }
 
-// Initialize App: Set up authentication and event listeners
 function initApp() {
     initAuth();
     setupEventListeners();
-    toggleInputFields(); // Set initial state based on current selection
+    toggleInputFields(); // Set the initial state based on the default selection
 }
 
-// Start the application when the DOM is ready
 window.addEventListener('DOMContentLoaded', initApp);
