@@ -1,123 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>DevDok - AI-Powered Code Explainer</title>
+    <title>DevDok - Automatically document your tickets</title>
+    <!-- Favicon -->
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <meta name="description" content="Understand any code instantly with AI explanations.">
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Meta Description -->
+    <meta name="description" content="DevDok helps developers generate comprehensive documentation for their code automatically. Transform your code and Jira tickets into clear, structured documentation for Notion and Confluence." />
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="DevDok - Automatically document your tickets" />
+    <meta property="og:description" content="Transform your code and Jira tickets into documentation with DevDok." />
+    <meta property="og:image" content="favicon.ico" />
+    <meta property="og:url" content="https://www.devdok.com/" />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link
+        rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16604410913"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-16604410913');
+    </script>
+
+    <!-- Custom Cookie Banner Styles -->
     <style>
-        /* Override dark mode styles */
-        body {
-            background-color: #f8f9fa;
-            color: #333;
-            font-family: 'Inter', sans-serif;
-        }
-        
+        /* Cookie Banner Styles */
         #cookie-banner {
-            background-color: #ffffff;
-            border-top: 2px solid #e9ecef;
-            color: #495057;
+            display: none;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #f8f9fa;
+            color: #343a40;
+            padding: 15px;
+            text-align: center;
+            z-index: 9999;
         }
 
-        .btn-success {
-            background-color: #28a745;
-            border-color: #28a745;
-            padding: 12px 30px;
-            border-radius: 8px;
+        #cookie-banner span {
+            font-size: 14px;
         }
 
-        .feature-list {
-            list-style: none;
-            padding-left: 0;
+        #cookie-banner button {
+            margin-left: 15px;
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
         }
-        
-        .feature-list li {
-            margin: 15px 0;
-            padding: 12px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+        #cookie-banner button:hover {
+            background-color: #0056b3;
+        }
+
+        #cookie-banner a {
+            margin-left: 10px;
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        #cookie-banner a:hover {
+            color: #0056b3;
         }
     </style>
 </head>
 
 <body>
     <!-- Main Container -->
-    <div class="container mt-5">
-        <div class="row align-items-center">
-            <div class="col-md-6 order-2 order-md-1 text-center text-md-left">
-                <h1 class="display-4 mb-4" style="color: #2d3436; font-weight: 600;">
-                    AI writes the code,<br>you understand it
-                </h1>
-                <p class="lead mb-4 text-muted">
-                    Paste any GitHub file or code snippet.<br>
-                    Understand what's really going on with DevDok
-                </p>
-                <button onclick="window.location.href='generator.html'" 
-                        class="btn btn-success btn-lg">
-                    <i class="fas fa-play mr-2"></i>Get Started
-                </button>
-            </div>
-            
-            <div class="col-md-6 order-1 order-md-2 mb-5 mb-md-0">
-                <img src="devdok.png" alt="Code explanation illustration" 
-                     class="img-fluid rounded-lg shadow-sm">
-            </div>
+    <div class="container mt-5 index-container">
+        <div class="left">
+            <h1>Automatically Generate Your Documentation</h1>
+            <p>Transform your GitHub code and Jira tickets into documentation for Notion and Confluence.</p>
+            <button onclick="window.location.href='generator.html'" class="btn btn-primary">Get Started</button>
+        </div>
+        <div class="right">
+            <img src="devdok.png" alt="Documentation Image" class="img-fluid">
         </div>
     </div>
 
     <!-- Cookie Banner -->
-    <div id="cookie-banner" class="fixed-bottom">
-        <div class="container py-3 d-flex justify-content-between align-items-center">
-            <span class="text-secondary">
-                We use cookies to enhance your experience. 
-                <a href="privacy.html" class="text-primary">Learn more</a>
-            </span>
-            <button id="accept-cookies" class="btn btn-primary btn-sm">
-                Accept
-            </button>
-        </div>
+    <div id="cookie-banner">
+        <span>
+            We use cookies to enhance your browsing experience.
+            <a href="privacy.html">Privacy Policy</a>
+        </span>
+        <button id="accept-cookies">Accept</button>
     </div>
 
     <!-- Footer -->
-    <footer class="mt-5 py-4 border-top">
-        <div class="container text-center">
-            <div class="mb-2">
-                <a href="privacy.html" class="text-secondary">Privacy Policy</a>
-            </div>
-            <div class="text-muted small">
-                &copy; 2025 DevDok · Made with <i class="fas fa-heart text-danger"></i> for developers
-            </div>
-        </div>
+    <footer>
+        &copy; 2024 DevDok. All rights reserved.
+        <a href="privacy.html">Privacy Policy</a>
     </footer>
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> <!-- Full jQuery -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <!-- Custom Cookie Banner Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if the user has already accepted cookies
             if (!localStorage.getItem('cookiesAccepted')) {
-                document.getElementById('cookie-banner').style.display = 'flex';
+                document.getElementById('cookie-banner').style.display = 'block';
             }
 
+            // Handle the accept button click
             document.getElementById('accept-cookies').addEventListener('click', function() {
                 localStorage.setItem('cookiesAccepted', 'true');
                 document.getElementById('cookie-banner').style.display = 'none';
+
+                // Initialize Google Analytics or other tracking scripts here
+                // For example:
+                // gtag('config', 'AW-16604410913');
             });
         });
     </script>
 </body>
+
 </html>
